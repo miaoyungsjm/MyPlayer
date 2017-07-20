@@ -4,8 +4,8 @@
     android:layout_height="match_parent">
 
     <include
-        android:id="@+id/title_my_include"
-        layout="@layout/title_my"
+        android:id="@+id/title_person_include"
+        layout="@layout/title_person"
         android:layout_width="match_parent"
         android:layout_height="40dp" />
 

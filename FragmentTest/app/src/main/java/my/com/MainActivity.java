@@ -3,6 +3,7 @@ package my.com;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,13 +12,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import my.com.fragment.FriendFragment;
+import my.com.fragment.IndexFragment;
+import my.com.fragment.MyFragment;
+import my.com.fragment.PersonFragment;
+
 public class MainActivity extends Activity implements View.OnClickListener {
 
     private LinearLayout navigation_index_ll, navigation_my_ll, navigation_friend_ll, navigation_person_ll;
     private ImageView navigation_index_iv, navigation_my_iv, navigation_friend_iv, navigation_person_iv;
     private TextView navigation_index_tv, navigation_my_tv, navigation_friend_tv, navigation_person_tv;
 
-    private FragmentManager fManager;
+    private FragmentManager fmanager;
     private String[] TAGS = new String[]{"index", "my", "friend", "person"};
 
     @Override
@@ -26,6 +32,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_main);
 
         bindViews();
+        navigation_index_iv.setSelected(true);
+        navigation_index_tv.setSelected(true);
+        showContent(0);
     }
 
     private void bindViews(){
@@ -72,25 +81,62 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 resetSelect();
                 navigation_index_iv.setSelected(true);
                 navigation_index_tv.setSelected(true);
+                showContent(0);
                 break;
 
             case R.id.navigation_my_ll :
                 resetSelect();
                 navigation_my_iv.setSelected(true);
                 navigation_my_tv.setSelected(true);
+                showContent(1);
                 break;
 
             case R.id.navigation_friend_ll :
                 resetSelect();
                 navigation_friend_iv.setSelected(true);
                 navigation_friend_tv.setSelected(true);
+                showContent(2);
                 break;
 
             case R.id.navigation_person_ll :
                 resetSelect();
                 navigation_person_iv.setSelected(true);
                 navigation_person_tv.setSelected(true);
+                showContent(3);
                 break;
         }
+    }
+
+    private void showContent(int to){
+        if(fmanager == null){
+            fmanager = this.getFragmentManager();
+        }
+        FragmentTransaction fTransaction = fmanager.beginTransaction();
+
+        fTransaction
+                .replace(R.id.framelayout_main, getFragment(to),TAGS[to])
+                .commit();
+    }
+
+    private Fragment getFragment(int index) {
+
+        switch (index) {
+            case 0:
+                Fragment indexfragment = new IndexFragment();
+                return indexfragment;
+
+            case 1:
+                Fragment myfragment = new MyFragment();
+                return myfragment;
+
+            case 2:
+                Fragment friendfragment = new FriendFragment();
+                return friendfragment;
+
+            case 3:
+                Fragment personfragment = new PersonFragment();
+                return personfragment;
+        }
+        return null;
     }
 }

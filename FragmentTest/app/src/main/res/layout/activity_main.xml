@@ -12,7 +12,7 @@
     <FrameLayout
         android:id="@+id/framelayout_navigation"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="47dp"
         android:layout_alignParentBottom="true">
 
         <LinearLayout
@@ -36,9 +36,10 @@
 
                     <ImageView
                         android:id="@+id/navigation_index_iv"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_gravity="center"
+                        android:layout_marginTop="3dp"
                         android:background="@drawable/navigation_index_imageview"/>
                     <TextView
                         android:id="@+id/navigation_index_tv"
@@ -46,7 +47,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="首页"
-                        android:textSize="12sp"
+                        android:textSize="10sp"
                         android:textColor="@drawable/navigation_textview"/>
                 </LinearLayout>
 
@@ -67,9 +68,10 @@
 
                     <ImageView
                         android:id="@+id/navigation_my_iv"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_gravity="center"
+                        android:layout_marginTop="3dp"
                         android:background="@drawable/navigation_my_imageview"/>
                     <TextView
                         android:id="@+id/navigation_my_tv"
@@ -77,7 +79,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="我的"
-                        android:textSize="12sp"
+                        android:textSize="10sp"
                         android:textColor="@drawable/navigation_textview"/>
 
                 </LinearLayout>
@@ -99,9 +101,10 @@
 
                     <ImageView
                         android:id="@+id/navigation_friend_iv"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_gravity="center"
+                        android:layout_marginTop="3dp"
                         android:background="@drawable/navigation_friend_imageview"/>
                     <TextView
                         android:id="@+id/navigation_friend_tv"
@@ -109,7 +112,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="朋友"
-                        android:textSize="12sp"
+                        android:textSize="10sp"
                         android:textColor="@drawable/navigation_textview"/>
                 </LinearLayout>
 
@@ -130,9 +133,10 @@
 
                     <ImageView
                         android:id="@+id/navigation_person_iv"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_gravity="center"
+                        android:layout_marginTop="3dp"
                         android:background="@drawable/navigation_person_imageview"/>
                     <TextView
                         android:id="@+id/navigation_person_tv"
@@ -140,7 +144,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="账号"
-                        android:textSize="12sp"
+                        android:textSize="10sp"
                         android:textColor="@drawable/navigation_textview"/>
                 </LinearLayout>
 

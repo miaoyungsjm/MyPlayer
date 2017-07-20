@@ -7,6 +7,6 @@
         android:id="@+id/title_index_include"
         layout="@layout/title_index"
         android:layout_width="match_parent"
-        android:layout_height="45dp" />
+        android:layout_height="40dp" />
 
 </LinearLayout>

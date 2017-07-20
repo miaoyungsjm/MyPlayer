@@ -5,14 +5,13 @@
     android:background="@color/colorAccent">
 
     <ImageView
-        android:id="@+id/title_index_search"
-        android:layout_width="17dp"
+        android:id="@+id/title_friend_addfriend"
+        android:layout_width="20dp"
         android:layout_height="17dp"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="10dp"
-        android:background="@drawable/search" />
-
+        android:background="@drawable/addfriend" />
 
     <LinearLayout
         android:layout_width="220dp"
@@ -22,44 +21,43 @@
         android:layout_centerHorizontal="true">
 
         <TextView
-            android:id="@+id/title_index_list"
+            android:id="@+id/title_friend_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="歌单"
+            android:text="好友"
             android:textSize="15sp"
             android:textColor="@color/colorWhite"/>
 
         <TextView
-            android:id="@+id/title_index_recommend"
+            android:id="@+id/title_friend_chat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="推荐"
+            android:text="当前"
             android:textSize="15sp"
             android:textColor="@color/colorWhite"/>
 
         <TextView
-            android:id="@+id/title_index_ranking"
+            android:id="@+id/title_friend_dynamic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="排行"
+            android:text="动态"
             android:textSize="15sp"
             android:textColor="@color/colorWhite"/>
-
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/title_index_playing"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
+        android:id="@+id/title_frinend_camera"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dp"
-        android:background="@drawable/play"/>
+        android:background="@drawable/camera"/>
 
 </RelativeLayout>
