@@ -28,24 +28,26 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/navigation_index"
+                    android:id="@+id/navigation_index_ll"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:layout_gravity="center">
 
                     <ImageView
+                        android:id="@+id/navigation_index_iv"
                         android:layout_width="35dp"
                         android:layout_height="35dp"
                         android:layout_gravity="center"
-                        android:background="@drawable/index_white"/>
+                        android:background="@drawable/navigation_index_imageview"/>
                     <TextView
+                        android:id="@+id/navigation_index_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="首页"
                         android:textSize="12sp"
-                        android:textColor="@color/colorWhite"/>
+                        android:textColor="@drawable/navigation_textview"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -57,24 +59,26 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/navigation_my"
+                    android:id="@+id/navigation_my_ll"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:layout_gravity="center">
 
                     <ImageView
+                        android:id="@+id/navigation_my_iv"
                         android:layout_width="35dp"
                         android:layout_height="35dp"
                         android:layout_gravity="center"
-                        android:background="@drawable/catalogue_white"/>
+                        android:background="@drawable/navigation_my_imageview"/>
                     <TextView
+                        android:id="@+id/navigation_my_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="我的"
                         android:textSize="12sp"
-                        android:textColor="@color/colorWhite"/>
+                        android:textColor="@drawable/navigation_textview"/>
 
                 </LinearLayout>
 
@@ -87,24 +91,26 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/navigation_friend"
+                    android:id="@+id/navigation_friend_ll"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:layout_gravity="center">
 
                     <ImageView
+                        android:id="@+id/navigation_friend_iv"
                         android:layout_width="35dp"
                         android:layout_height="35dp"
                         android:layout_gravity="center"
-                        android:background="@drawable/friend_white"/>
+                        android:background="@drawable/navigation_friend_imageview"/>
                     <TextView
+                        android:id="@+id/navigation_friend_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="朋友"
                         android:textSize="12sp"
-                        android:textColor="@color/colorWhite"/>
+                        android:textColor="@drawable/navigation_textview"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -116,24 +122,26 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/navigation_person"
+                    android:id="@+id/navigation_person_ll"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:layout_gravity="center">
 
                     <ImageView
+                        android:id="@+id/navigation_person_iv"
                         android:layout_width="35dp"
                         android:layout_height="35dp"
                         android:layout_gravity="center"
-                        android:background="@drawable/account_white"/>
+                        android:background="@drawable/navigation_person_imageview"/>
                     <TextView
+                        android:id="@+id/navigation_person_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="账号"
                         android:textSize="12sp"
-                        android:textColor="@color/colorWhite"/>
+                        android:textColor="@drawable/navigation_textview"/>
                 </LinearLayout>
 
             </LinearLayout>
