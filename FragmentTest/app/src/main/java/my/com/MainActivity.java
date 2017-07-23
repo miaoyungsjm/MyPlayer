@@ -23,7 +23,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private ImageView navigation_index_iv, navigation_my_iv, navigation_friend_iv, navigation_person_iv;
     private TextView navigation_index_tv, navigation_my_tv, navigation_friend_tv, navigation_person_tv;
 
-    private FragmentManager fmanager;
+    private FragmentManager fManager;
     private String[] TAGS = new String[]{"index", "my", "friend", "person"};
 
     @Override
@@ -108,14 +108,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     private void showContent(int to){
-        if(fmanager == null){
-            fmanager = this.getFragmentManager();
+        if(fManager == null){
+            fManager = this.getFragmentManager();
         }
-        FragmentTransaction fTransaction = fmanager.beginTransaction();
+        FragmentTransaction fTransaction = fManager.beginTransaction();
 
-        fTransaction
-                .replace(R.id.framelayout_main, getFragment(to),TAGS[to])
-                .commit();
+        fTransaction.replace(R.id.framelayout_main, getFragment(to),TAGS[to]);
+        //fTransaction.addToBackStack(null);
+        fTransaction.commit();
     }
 
     private Fragment getFragment(int index) {

@@ -20,7 +20,6 @@
             android:text="账号"
             android:textSize="15sp"
             android:textColor="@color/colorWhite"/>
-
     </LinearLayout>
 
     <ImageView

@@ -32,25 +32,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:layout_gravity="center">
+                    android:layout_gravity="center"
+                    android:gravity="bottom|center">
 
                     <ImageView
                         android:id="@+id/navigation_index_iv"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="3dp"
                         android:background="@drawable/navigation_index_imageview"/>
                     <TextView
                         android:id="@+id/navigation_index_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:text="首页"
                         android:textSize="10sp"
                         android:textColor="@drawable/navigation_textview"/>
                 </LinearLayout>
-
             </LinearLayout>
 
             <LinearLayout
@@ -64,26 +61,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:layout_gravity="center">
+                    android:layout_gravity="center"
+                    android:gravity="bottom|center">
 
                     <ImageView
                         android:id="@+id/navigation_my_iv"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="3dp"
                         android:background="@drawable/navigation_my_imageview"/>
                     <TextView
                         android:id="@+id/navigation_my_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:text="我的"
                         android:textSize="10sp"
                         android:textColor="@drawable/navigation_textview"/>
-
                 </LinearLayout>
-
             </LinearLayout>
 
             <LinearLayout
@@ -97,25 +90,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:layout_gravity="center">
+                    android:layout_gravity="center"
+                    android:gravity="bottom|center">
 
                     <ImageView
                         android:id="@+id/navigation_friend_iv"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="3dp"
                         android:background="@drawable/navigation_friend_imageview"/>
                     <TextView
                         android:id="@+id/navigation_friend_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:text="朋友"
                         android:textSize="10sp"
                         android:textColor="@drawable/navigation_textview"/>
                 </LinearLayout>
-
             </LinearLayout>
 
             <LinearLayout
@@ -129,30 +119,25 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:layout_gravity="center">
+                    android:layout_gravity="center"
+                    android:gravity="bottom|center">
 
                     <ImageView
                         android:id="@+id/navigation_person_iv"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="3dp"
                         android:background="@drawable/navigation_person_imageview"/>
                     <TextView
                         android:id="@+id/navigation_person_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:text="账号"
                         android:textSize="10sp"
                         android:textColor="@drawable/navigation_textview"/>
                 </LinearLayout>
-
             </LinearLayout>
 
         </LinearLayout>
-
     </FrameLayout>
-
 
 </RelativeLayout>

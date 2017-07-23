@@ -7,4 +7,5 @@
     <color name="colorBlack">#000000</color>
     <color name="colorDimGrey">#2c2c2c</color>
     <color name="colorGrey">#bfbfbf</color>
+    <color name="coloerTransparentGrey">#50000000</color>
 </resources>
