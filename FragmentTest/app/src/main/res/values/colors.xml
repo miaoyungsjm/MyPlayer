@@ -5,7 +5,8 @@
     <color name="colorAccent">#CD2626</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBlack">#000000</color>
-    <color name="colorDimGrey">#2c2c2c</color>
     <color name="colorGrey">#bfbfbf</color>
-    <color name="coloerTransparentGrey">#50000000</color>
+    <color name="colorTransparentDimGrey">#c0000000</color>
+    <color name="colorTransparentGrey">#60000000</color>
+    <color name="colorTransparentLightGrey">#30000000</color>
 </resources>

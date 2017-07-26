@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_test">
@@ -11,34 +10,143 @@
         android:layout_width="match_parent"
         android:layout_height="40dp" />
 
-    <View
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/colorGrey"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_below="@+id/title_player_include"
+        android:layout_marginBottom="80dp">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="25dp"
-        android:background="@color/coloerTransparentGrey">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/colorGrey"/>
 
-        <ImageView
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="15dp"
-            android:background="@drawable/volume" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:background="@color/colorTransparentGrey">
 
-        <SeekBar
-            android:id="@+id/player_volume_seekbar"
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/volume" />
+
+            <SeekBar
+                android:id="@+id/player_volume_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="45dp"
+                android:layout_marginRight="45dp"/>
+        </RelativeLayout>
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"/>
-    </RelativeLayout>
+            android:background="@color/colorTransparentLightGrey">
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorTransparentGrey"
+        android:id="@+id/linearLayout">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="25dp">
+
+            <TextView
+                android:id="@+id/player_progress_time1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="10dp"
+                android:text="00:00"
+                android:textSize="12sp"
+                android:textColor="@color/colorWhite" />
+
+            <SeekBar
+                android:id="@+id/player_progress_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="45dp"
+                android:layout_marginRight="45dp" />
+
+            <TextView
+                android:id="@+id/player_progress_time2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:text="00:00"
+                android:textSize="12sp"
+                android:textColor="@color/colorWhite" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/m_circulation"/>
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="35dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/player_mplay_iv"
+                android:layout_marginRight="45dp"
+                android:background="@drawable/m_previous"/>
+
+            <ImageView
+                android:id="@+id/player_mplay_iv"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/player_play_or_stop"/>
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="35dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/player_mplay_iv"
+                android:layout_marginLeft="45dp"
+                android:background="@drawable/m_next"/>
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/m_category"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
 
 
-</LinearLayout>
+</RelativeLayout>
