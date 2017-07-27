@@ -23,7 +23,7 @@
         <activity
             android:name=".PlayerActivity"
             android:launchMode="singleInstance"
-            android:theme="@style/AppTheme">
+            android:theme="@style/PlayerTheme">
             <!--android:configChanges="orientation|keyboard|keyboardHidden"-->
             <!--android:windowSoftInputMode="adjustResize"-->
         </activity>

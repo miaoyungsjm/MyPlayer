@@ -43,13 +43,39 @@ public class PlayerActivity extends BaseActivity {
     private static final String TAG = "PlayerActivity";
 
 
+    /*
+     * 重写按键事件 onKeyDown
+     *
+     */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0){
-            moveTaskToBack(true);
+        switch (keyCode)
+        {
+            case KeyEvent.KEYCODE_BACK :
+                if(event.getRepeatCount() == 0)moveTaskToBack(true);
+                return true;
+
+            case KeyEvent.KEYCODE_VOLUME_UP :
+                audiomanager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+                updatePlayerVolumeSeekbar();
+                return true;
+
+            case KeyEvent.KEYCODE_VOLUME_DOWN :
+                audiomanager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
+                updatePlayerVolumeSeekbar();
+                return true;
         }
         return super.onKeyDown(keyCode, event);
     }
+    public void updatePlayerVolumeSeekbar(){
+        // 重新获取系统当前音量
+        currentVolume = audiomanager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        // 更新音量拖动条
+        player_volume_seekbar.setProgress(currentVolume);
+        // 页面浮动提示信息：Toast.makeText()
+        Toast.makeText(PlayerActivity.this, "Current Volume : " + currentVolume*100/maxVolume + "%", Toast.LENGTH_SHORT).show();
+    }
+
 
 //    @Override
 //    public void onBackPressed() {
@@ -113,10 +139,16 @@ public class PlayerActivity extends BaseActivity {
         }
     };
     // 当按手机的音量 + - 键，系统音量发生改变时，需要更新音量拖动条（player_volume_seekbar）状态
-    // 暂时使用按键的检测 onKeyDown(int keyCode, KeyEvent event) 重写
 //    private void updata_volume_seekbar(){
-//      涉及广播组件的使用，学习吧 ！！！ ~\(≧▽≦)/~
+// 涉及广播组件的使用，学习吧 ！！！ ~\(≧▽≦)/~
 //    }
+// ！！！
+// 暂时使用重写按键 onKeyDown(int keyCode, KeyEvent event)
+// BUG ：
+// 1）重写了按键功能
+// 2）只限于这个 Activity 的按键功能有效
+// 3）写法极其不规范，方法不能复用
+// ！！！
 
 
 
