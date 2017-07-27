@@ -22,7 +22,7 @@ import java.util.TimerTask;
  * Created by MY on 2017/7/21.
  */
 
-public class PlayerActivity extends Activity {
+public class PlayerActivity extends BaseActivity {
 
     private AudioManager audiomanager;          // 控制系统音量的对象
     private int currentVolume, maxVolume;       // 获取系统当前音量，最大音量
@@ -44,10 +44,18 @@ public class PlayerActivity extends Activity {
 
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        moveTaskToBack(false);
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0){
+            moveTaskToBack(true);
+        }
+        return super.onKeyDown(keyCode, event);
     }
+
+//    @Override
+//    public void onBackPressed() {
+//        super.onBackPressed();
+//        moveTaskToBack(true);
+//    }
 
     /*
     onCreate(@Nullable Bundle savedInstanceState)
@@ -105,10 +113,11 @@ public class PlayerActivity extends Activity {
         }
     };
     // 当按手机的音量 + - 键，系统音量发生改变时，需要更新音量拖动条（player_volume_seekbar）状态
+    // 暂时使用按键的检测 onKeyDown(int keyCode, KeyEvent event) 重写
 //    private void updata_volume_seekbar(){
-//
+//      涉及广播组件的使用，学习吧 ！！！ ~\(≧▽≦)/~
 //    }
-// 涉及广播组件的使用，学习吧 ！！！ ~\(≧▽≦)/~
+
 
 
     // 进度拖动条（player_progress_seekbar）的处理
@@ -214,18 +223,18 @@ public class PlayerActivity extends Activity {
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             // 记录播放进度
             currentProgress = progress;
-            Log.i(TAG," -- onProgressChanged  " + progress + " : " + maxProgress);
+            Log.i(TAG," -- onProgressChanged  " + currentProgress + " : " + maxProgress);
 
             // 显示当前进度
-            str_progress_time1 = String.format("%1$02d:%2$02d",(currentProgress/1000)/60,(currentProgress/1000)%60);
+            str_progress_time1 = String.format( "%1$02d:%2$02d", ( currentProgress/1000)/60, (currentProgress/1000)%60 );
             player_progress_time1.setText(str_progress_time1);
 
 //            ！！！
 //            BUG        这里的播放完成判断有点小问题！！！！！！！！！
 //            ！！！
-            if(currentProgress >= maxProgress - 500)
+            if(currentProgress >= maxProgress - 1000)
             {
-                Log.i(TAG," -- currentProgress >= maxProgress - 500");
+                Log.i(TAG," -- currentProgress >= maxProgress - 1000");
                 player_mplay_iv.setSelected(false);
                 isPlay = false;
                 Log.i(TAG,"isPlay = false  Timer Stop");

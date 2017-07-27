@@ -20,7 +20,13 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".PlayerActivity"></activity>
+        <activity
+            android:name=".PlayerActivity"
+            android:launchMode="singleInstance"
+            android:theme="@style/AppTheme">
+            <!--android:configChanges="orientation|keyboard|keyboardHidden"-->
+            <!--android:windowSoftInputMode="adjustResize"-->
+        </activity>
 
     </application>
 

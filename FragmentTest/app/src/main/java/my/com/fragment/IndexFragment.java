@@ -42,10 +42,7 @@ public class IndexFragment extends Fragment implements View.OnClickListener{
         switch (v.getId())
         {
             case R.id.title_index_playing :
-                Intent intent = new Intent();
-//                intent.addCategory(Intent.CATEGORY_HOME);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setClass(getActivity(), PlayerActivity.class);
+                Intent intent = new Intent(getActivity(), PlayerActivity.class);
                 getActivity().startActivity(intent);
                 //getActivity().startActivity(new Intent().setClass(getActivity(), PlayerActivity.class));
                 break;
