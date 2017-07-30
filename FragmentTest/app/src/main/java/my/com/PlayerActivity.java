@@ -97,7 +97,8 @@ public class PlayerActivity extends BaseActivity {
             player_volume_seekbar.setProgress(currentVolume);
             // 页面浮动提示信息：Toast.makeText()
             //Toast.makeText(PlayerActivity.this, "Current Volume : " + currentVolume*100/maxVolume + "%", Toast.LENGTH_SHORT).show();
-            Log.i(TAG,"  update player_volume_seekbar");
+            Log.i(TAG,"  player_volume_seekbar.setProgress(currentVolume)\n" +
+                    "  currentVolume" + currentVolume);
         }
     }
     private void volume_receiver_register(){
@@ -105,12 +106,14 @@ public class PlayerActivity extends BaseActivity {
         intentFilter.addAction(BroadcastAction.VolumeAction);// "android.media.VOLUME_CHANGED_ACTION"
         volumeChangeReceiver = new VolumeChangeReceiver();
         registerReceiver(volumeChangeReceiver, intentFilter);
+        Log.i(TAG," -- registerReceiver(volumeChangeReceiver, intentFilter)\n");
     }
 
     /*
      * 音量拖动条（player_volume_seekbar）的处理
      */
     private void volume_seekbar(){
+        Log.i(TAG, " -- volume_seekbar");
         // 获取系统最大音量 getStreamMaxVolume（int streamType）
         maxVolume = audiomanager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         // 获取系统当前音量 getStreamVolume(int streamType)
@@ -118,10 +121,12 @@ public class PlayerActivity extends BaseActivity {
 
         // 设置音量拖动条的最大值
         player_volume_seekbar.setMax(maxVolume);
-        Log.i(TAG, "  player_volume_seekbar.setMax(maxVolume) : maxVolume = " + maxVolume);
+        Log.i(TAG, "  player_volume_seekbar.setMax(maxVolume)\n" +
+                "  maxVolume = " + maxVolume);
         // 设置音量拖动条的当前值
         player_volume_seekbar.setProgress(currentVolume);
-        Log.i(TAG, "  player_volume_seekbar.setProgress(currentVolume) : currentVolume" + currentVolume);
+        Log.i(TAG, "  player_volume_seekbar.setProgress(currentVolume)\n" +
+                "  currentVolume" + currentVolume);
         // 设置拖动条事件监听器，volume_seekBarChangeListener 为对应监听方法的变量（个人理解类似匿名内部类）
         player_volume_seekbar.setOnSeekBarChangeListener(volume_seekBarChangeListener);
     }
@@ -133,7 +138,8 @@ public class PlayerActivity extends BaseActivity {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             // 调试信息
-            Log.i(TAG," -- OnSeekBarChangeListener : onProgressChanged  progress = " + progress);
+            Log.i(TAG," -- OnSeekBarChangeListener : onProgressChanged\n" +
+                    "  progress = " + progress);
             // 设置音量大小 setStreamVolume(int streamType, int index, intflags)
             audiomanager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, AudioManager.FLAG_SHOW_UI);
             // 重新获取系统当前音量
@@ -141,7 +147,8 @@ public class PlayerActivity extends BaseActivity {
             // 或者这样写：
             // currentVolume = progress;
             // audiomanager.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume, AudioManager.FLAG_SHOW_UI);
-            Log.i(TAG,"  update AudioManager.STREAM_MUSIC");
+            Log.i(TAG,"  currentVolume = " + currentVolume);
+            Log.i(TAG,"  audiomanager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, AudioManager.FLAG_SHOW_UI)");
         }
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
@@ -160,6 +167,7 @@ public class PlayerActivity extends BaseActivity {
      * 进度拖动条（player_progress_seekbar）的处理
      */
     private void progress_seekbar(){
+        Log.i(TAG, " -- progress_seekbar");
         // 媒体播放器 mediaplayer 初始化
         mediaplayer_init();
         // 定时器 timer 初始化
@@ -201,11 +209,10 @@ public class PlayerActivity extends BaseActivity {
     // 媒体播放器 mediaplayer 初始化
     public void mediaplayer_init(){
         File file = new File("/sdcard/Files/", "music.mp3");
-        Log.i(TAG," -- file.getAbsolutePath() :" + file.getAbsolutePath());
+        Log.i(TAG,"  file.getAbsolutePath() :" + file.getAbsolutePath());
         if(file.exists()){
-            Log.i(TAG," -- file.exists()");
+            Log.i(TAG,"  file.exists()");
             try{
-                Log.i(TAG," -- try");
                 // 设置音频类型
                 mediaplayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 // 设置mp3数据源
@@ -225,10 +232,13 @@ public class PlayerActivity extends BaseActivity {
                         // 设置进度条最大值
                         maxProgress = mediaplayer.getDuration();
                         player_progress_seekbar.setMax(mediaplayer.getDuration());
-                        Log.i(TAG,"  player_progress_seekbar.setMax() : maxProgress = " + maxProgress);
+                        Log.i(TAG,"  player_progress_seekbar.setMax(mediaplayer.getDuration())\n" +
+                                "  maxProgress = " + maxProgress);
                         // <Textview>控件 player_progress_time2 显示进度条最大值
                         str_progress_time2 = String.format("%1$02d:%2$02d",(maxProgress/1000)/60,(maxProgress/1000)%60);
                         player_progress_time2.setText(str_progress_time2);
+                        Log.i(TAG,"   player_progress_time2.setText(str_progress_time2)\n" +
+                                "  str_progress_time2 = " + str_progress_time2);
                     }
                 });
 
@@ -245,14 +255,14 @@ public class PlayerActivity extends BaseActivity {
                 });
 
             }catch (Exception e){
-                Log.i(TAG," -- catch (Exception e)");
+                Log.i(TAG,"  catch (Exception e)");
                 Toast.makeText(getApplicationContext(), "mediaplayer error", Toast.LENGTH_LONG).show();
                 e.printStackTrace();
                 System.out.println(e);
             }
         } else {
             Toast.makeText(getApplicationContext(), "file error", Toast.LENGTH_LONG).show();
-            Log.i(TAG,file.getAbsolutePath() + " -- file.exists() == false");
+            Log.i(TAG,file.getAbsolutePath() + "  file.exists() == false");
         }
     }
 

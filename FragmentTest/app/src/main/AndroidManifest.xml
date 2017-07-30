@@ -28,6 +28,10 @@
             <!--android:windowSoftInputMode="adjustResize"-->
         </activity>
 
+        <service android:name=".service.PlayerService">
+
+        </service>
+
     </application>
 
 </manifest>

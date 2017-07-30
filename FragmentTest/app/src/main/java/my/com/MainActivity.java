@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.provider.Settings;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -29,6 +30,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private FragmentManager fManager;
     private String[] TAGS = new String[]{"index", "my", "friend", "person"};
 
+    private ViewPager viewpager_index;
 
     private long mExitTime;
     @Override
@@ -82,6 +84,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         navigation_my_tv = (TextView) findViewById(R.id.navigation_my_tv);
         navigation_friend_tv = (TextView) findViewById(R.id.navigation_friend_tv);
         navigation_person_tv = (TextView) findViewById(R.id.navigation_person_tv);
+
+        viewpager_index = (ViewPager) findViewById(R.id.viewpager_index);
     }
 
     private void resetSelect(){
