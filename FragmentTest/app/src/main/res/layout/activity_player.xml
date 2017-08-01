@@ -67,7 +67,7 @@
             android:layout_height="25dp">
 
             <TextView
-                android:id="@+id/player_progress_time1"
+                android:id="@+id/player_current_progress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -87,7 +87,7 @@
                 android:layout_marginRight="45dp" />
 
             <TextView
-                android:id="@+id/player_progress_time2"
+                android:id="@+id/player_max_progress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
