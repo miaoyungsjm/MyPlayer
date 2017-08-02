@@ -112,6 +112,7 @@
                 android:background="@drawable/m_circulation"/>
 
             <ImageView
+                android:id="@+id/player_mlast_iv"
                 android:layout_width="40dp"
                 android:layout_height="35dp"
                 android:layout_centerVertical="true"
@@ -128,6 +129,7 @@
                 android:background="@drawable/player_play_or_stop"/>
 
             <ImageView
+                android:id="@+id/player_mnext_iv"
                 android:layout_width="40dp"
                 android:layout_height="35dp"
                 android:layout_centerVertical="true"

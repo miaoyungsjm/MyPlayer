@@ -1,11 +1,17 @@
 package my.com;
 
+import android.app.Activity;
+import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -31,15 +37,17 @@ public class PlayerActivity extends BaseActivity {
 
 
     private String str_musicName;
+    private TextView title_player_music_name;
     private SeekBar player_progress_seekbar;    // 进度拖动条
     private int currentProgress, maxProgress;   // 歌曲当前进度，最大进度
     private String str_currentProgress, str_maxProgress;
-    private TextView title_player_music_name;
     private TextView player_current_progress, player_max_progress;  //歌曲当前时间，结束时间
-    private boolean isPlay = false;             // 判断当前是否正在播放，用于开关定时器和更新播放按钮状态
+    private boolean isPlay = false;
     private ImageView player_mplay_iv;          //播放按钮
+    private ImageView player_mnext_iv;          //下一首按钮
+    private ImageView player_mlast_iv;          //上一首按钮
 
-    IntentFilter intentFilter_volume, intentFilter_playinfo;
+    private ImageView title_player_hide;
 
     private VolumeChangeReceiver volumeChangeReceiver;      // 系统音量广播接收器内部类对象
 
@@ -51,12 +59,32 @@ public class PlayerActivity extends BaseActivity {
 
 
     /*
+     * serviceConnection -- PlayerService 服务的绑定与解除
+     * playerControlBinder -- PlayerService 服务的控制（接口函数）对象
+     */
+    private PlayerService.PlayerControlBinder playerControlBinder;
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.i(TAG, " -- ServiceConnection : onServiceConnected");
+            playerControlBinder = (PlayerService.PlayerControlBinder) service;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.i(TAG, " -- ServiceConnection : onServiceDisconnected");
+        }
+    };
+
+    /*
      * onCreate(@Nullable Bundle savedInstanceState)
      */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
+
+        Log.d(TAG, " ------------------------------ PlayerActivity : onCreate");
 
         // 初始化界面控件
         init_views();
@@ -85,6 +113,10 @@ public class PlayerActivity extends BaseActivity {
         player_progress_seekbar = (SeekBar) findViewById(R.id.player_progress_seekbar);
 
         player_mplay_iv = (ImageView) findViewById(R.id.player_mplay_iv);
+        player_mnext_iv = (ImageView) findViewById(R.id.player_mnext_iv);
+        player_mlast_iv = (ImageView) findViewById(R.id.player_mlast_iv);
+
+        title_player_hide = (ImageView) findViewById(R.id.title_player_hide);
     }
 
     /*
@@ -106,11 +138,11 @@ public class PlayerActivity extends BaseActivity {
         }
     }
     private void volume_receiver_register(){
-        intentFilter_volume = new IntentFilter();
-        intentFilter_volume.addAction(BroadcastAction.VolumeAction);// "android.media.VOLUME_CHANGED_ACTION"
+        IntentFilter volumeIntentFilter = new IntentFilter();
+        volumeIntentFilter.addAction(BroadcastAction.VolumeAction);// "android.media.VOLUME_CHANGED_ACTION"
         volumeChangeReceiver = new VolumeChangeReceiver();
-        registerReceiver(volumeChangeReceiver, intentFilter_volume);
-        Log.i(TAG," -- registerReceiver(volumeChangeReceiver, intentFilter)\n");
+        registerReceiver(volumeChangeReceiver, volumeIntentFilter);
+        Log.i(TAG," -- registerReceiver(volumeChangeReceiver, volumeIntentFilter)\n");
     }
 
 
@@ -149,10 +181,6 @@ public class PlayerActivity extends BaseActivity {
                             "  currentprogress = " + currentProgress);
                     // 设置进度条的当前值
                     player_progress_seekbar.setProgress(currentProgress);
-                    // <Textview> 控件 player_current_progress 显示进度条当前值
-                    str_currentProgress = String.format("%1$02d:%2$02d",(currentProgress/1000)/60,
-                            (currentProgress/1000)%60);
-                    player_current_progress.setText(str_currentProgress);
                     break;
 
                 default:
@@ -161,10 +189,10 @@ public class PlayerActivity extends BaseActivity {
         }
     }
     private void playinfo_local_receiver_register(){
-        intentFilter_playinfo = new IntentFilter();
-        intentFilter_playinfo.addAction(BroadcastAction.PlayInfoAction);// "com.my.broadcast.PLAYINFO_LOCAL_ACTION"
+        IntentFilter playinfo_intentFilter = new IntentFilter();
+        playinfo_intentFilter.addAction(BroadcastAction.PlayInfoAction);// "com.my.broadcast.PLAYINFO_LOCAL_ACTION"
         playInfoLocalReceiver = new PlayInfoLocalReceiver();
-        localBroadcastManager.registerReceiver(playInfoLocalReceiver, intentFilter_playinfo);
+        localBroadcastManager.registerReceiver(playInfoLocalReceiver, playinfo_intentFilter);
         Log.i(TAG," -- localBroadcastManager.registerReceiver(playInfoLocalReceiver, intentFilter)\n");
     }
 
@@ -189,13 +217,13 @@ public class PlayerActivity extends BaseActivity {
         Log.i(TAG, "  player_volume_seekbar.setProgress(currentVolume)\n" +
                 "  currentVolume = " + currentVolume);
         // 设置拖动条事件监听器，volume_seekBarChangeListener 为对应监听方法的变量（个人理解类似匿名内部类）
-        player_volume_seekbar.setOnSeekBarChangeListener(volume_seekBarChangeListener);
+        player_volume_seekbar.setOnSeekBarChangeListener(volume_onSeekBarChangeListener);
     }
 
     /*
-     * 音量拖动条事件监听器  SeekBar.OnSeekBarChangeListener volume_seekBarChangeListener
+     * 音量拖动条事件监听器  SeekBar.OnSeekBarChangeListener volume_onSeekBarChangeListener
      */
-    private SeekBar.OnSeekBarChangeListener volume_seekBarChangeListener = new SeekBar.OnSeekBarChangeListener(){
+    private SeekBar.OnSeekBarChangeListener volume_onSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener(){
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             // 更新当前音量
@@ -220,60 +248,135 @@ public class PlayerActivity extends BaseActivity {
     };
 
 
-
-
     /*
      * 进度拖动条（player_progress_seekbar）的处理
      */
     private void progress_seekbar(){
         Log.i(TAG, " -- progress_seekbar");
 
+        Intent intent = new Intent(PlayerActivity.this, PlayerService.class);
+
+        // 启动服务 PlayerService
+        intent.putExtra("musicname", "music.mp3");      // 传入播放的歌名
+        startService(intent);
+        Log.i(TAG, "  startService(startIntent)");
+
+        // 绑定服务 PlayerService
+        bindService(intent, serviceConnection, BIND_AUTO_CREATE);
+        Log.i(TAG, "  bindService(bindIntent, serviceConnection, BIND_AUTO_CREATE)");
+
+
+//        // 解绑服务
+//        unbindService(serviceConnection);
+//
+//        // 关闭 PlayerService
+//        Intent stopIntent = new Intent(PlayerActivity.this, PlayerService.class);
+//        stopService(stopIntent);
+
+        // 设置按钮的点击事件
+        player_mplay_iv.setOnClickListener(onClickListener);
+        player_mnext_iv.setOnClickListener(onClickListener);
+        player_mlast_iv.setOnClickListener(onClickListener);
+        title_player_hide.setOnClickListener(onClickListener);
 
         // 设置拖动条事件监听器， progress_seekBarChangeListener 为对应监听方法的变量（个人理解类似匿名内部类）
-        player_progress_seekbar.setOnSeekBarChangeListener(progress_seekBarChangeListener);
+        player_progress_seekbar.setOnSeekBarChangeListener(progress_onSeekBarChangeListener);
+    }
 
-        // 设置播放按钮的点击事件
-        player_mplay_iv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(isPlay == false){
-                    player_mplay_iv.setSelected(true);
-                    isPlay = true;
+    /*
+     * 点击事件监听器
+     */
+    private View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent  intent;
+            switch (v.getId())
+            {
+                case R.id.player_mplay_iv:
+                    if(isPlay == false){
+                        player_mplay_iv.setSelected(true);
+                        isPlay = true;
 
-                    Intent startIntent = new Intent(PlayerActivity.this, PlayerService.class);
-                    startIntent.putExtra("musicname", "music3.mp3");
-                    startService(startIntent);
-                }
-                else {
-                    player_mplay_iv.setSelected(false);
-                    isPlay = false;
+                        playerControlBinder.mPlay();
+                    } else {
+                        player_mplay_iv.setSelected(false);
+                        isPlay = false;
 
+                        playerControlBinder.mPause();
+                    }
+                    break;
+
+                case R.id.player_mnext_iv:
+                    mNext();
+                    break;
+
+                case R.id.player_mlast_iv:
+                    mLast();
+                    break;
+
+                case R.id.title_player_hide:
                     Intent stopIntent = new Intent(PlayerActivity.this, PlayerService.class);
                     stopService(stopIntent);
-                }
+                    unbindService(serviceConnection);
             }
-        });
+        }
+    };
+
+    public void mNext(){
+        player_progress_seekbar.setProgress(0);
+        player_current_progress.setText("00:00");
+
+        player_mplay_iv.setSelected(false);
+        isPlay = false;
+
+        Intent intent = new Intent(PlayerActivity.this, PlayerService.class);
+        intent.putExtra("musicname", "music2.mp3");
+        startService(intent);
+
+        player_mplay_iv.setSelected(true);
+        isPlay = true;
+    }
+    public void mLast(){
+        player_progress_seekbar.setProgress(0);
+        player_current_progress.setText("00:00");
+
+        player_mplay_iv.setSelected(false);
+        isPlay = false;
+
+        Intent intent = new Intent(PlayerActivity.this, PlayerService.class);
+        intent.putExtra("musicname", "music3.mp3");
+        startService(intent);
+
+        player_mplay_iv.setSelected(true);
+        isPlay = true;
     }
 
 
+
+
     /*
-     * 进度拖动条事件监听器 SeekBar.OnSeekBarChangeListener progress_seekBarChangeListener
+     * 进度拖动条事件监听器 SeekBar.OnSeekBarChangeListener progress_onSeekBarChangeListener
      */
-    private SeekBar.OnSeekBarChangeListener progress_seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+    private SeekBar.OnSeekBarChangeListener progress_onSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-            Log.i(TAG," -- OnSeekBarChangeListener : onProgressChanged  " + currentProgress + " : " + maxProgress);
-
             Log.i(TAG," -- OnSeekBarChangeListener : onProgressChanged  " + str_currentProgress + " : " + str_maxProgress);
+
+            /*
+             *  拖动进度条处理  <Textview> 控件显示拖动值
+             */
+            str_currentProgress = String.format("%1$02d:%2$02d",(progress/1000)/60,
+                    (progress/1000)%60);
+            player_current_progress.setText(str_currentProgress);
 
         }
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
             Log.i(TAG," -- OnSeekBarChangeListener : onStartTrackingTouch");
-            // 滑动时,暂停后台定时器
+
             player_mplay_iv.setSelected(false);
             isPlay = false;
+
         }
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
@@ -281,8 +384,12 @@ public class PlayerActivity extends BaseActivity {
             // 滑动结束后，重新设置值
             player_mplay_iv.setSelected(true);
             isPlay = true;
+
+            playerControlBinder.mSeekTo(player_progress_seekbar.getProgress());
+            playerControlBinder.mPlay();
         }
     };
+
 
     /*
      * 重写按键事件 onKeyDown
@@ -330,8 +437,16 @@ public class PlayerActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, " ------------------------------ PlayerActivity : onDestroy");
+
+        // 注销广播接收器
         unregisterReceiver(volumeChangeReceiver);
-        unregisterReceiver(playInfoLocalReceiver);
+        localBroadcastManager.unregisterReceiver(playInfoLocalReceiver);
+
+        // 关闭服务
+        Intent stopIntent = new Intent(PlayerActivity.this, PlayerService.class);
+        stopService(stopIntent);
+        unbindService(serviceConnection);
     }
 
 }

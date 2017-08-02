@@ -9,6 +9,7 @@ import android.provider.Settings;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -30,6 +31,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private FragmentManager fManager;
     private String[] TAGS = new String[]{"index", "my", "friend", "person"};
 
+    private static final String TAG = "MainActivity";         // 调试信息 TAG 标签
+
     private ViewPager viewpager_index;
 
     private long mExitTime;
@@ -48,7 +51,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
         else {
             ActivityCollector.finishAll();
-            System.exit(0);
+
+            //  加了这个所有的 Activity 的 onDestroy() 都没执行
+//            System.exit(0);
         }
     }
 
@@ -57,6 +62,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Log.d(TAG, " ------------------------------ MainActivity : onCreate");
 
         bindViews();
         navigation_index_iv.setSelected(true);
@@ -167,5 +174,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 return personfragment;
         }
         return null;
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, " ------------------------------ MainActivity : onDestroy");
     }
 }

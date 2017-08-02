@@ -1,6 +1,7 @@
 package my.com;
 
 import android.app.Activity;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ public class ActivityCollector {
         for (Activity activity : activityList){
             if(!activity.isFinishing()){
                 activity.finish();
+                Log.d("ActivityCollector", " ------------------------------ ActivityCollector : finishAll");
             }
         }
     }

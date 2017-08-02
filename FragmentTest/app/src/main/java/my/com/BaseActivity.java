@@ -21,6 +21,8 @@ public class BaseActivity extends Activity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Log.d(TAG, " ------------------------------ BaseActivity : onCreate");
+
         // 在 LogCat 打印对应 Activity 活动的类名
         Log.d(TAG,getClass().getSimpleName());
         // 在 ActivityCollector.activityList 添加 Activity
@@ -31,6 +33,7 @@ public class BaseActivity extends Activity{
     protected void onDestroy() {
         super.onDestroy();
 
+        Log.d(TAG, " ------------------------------ BaseActivity : onDestroy");
         // 在 ActivityCollector.activityList 移除 Activity
         ActivityCollector.removeActivity(this);
     }
