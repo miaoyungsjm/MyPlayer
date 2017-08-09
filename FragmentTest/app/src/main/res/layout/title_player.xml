@@ -5,7 +5,7 @@
     android:background="@color/colorTransparentGrey">
 
     <ImageView
-        android:id="@+id/title_player_hide"
+        android:id="@+id/title_player_hide_iv"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_centerVertical="true"
@@ -24,7 +24,7 @@
         android:layout_marginRight="60dp">
 
         <TextView
-            android:id="@+id/title_player_music_name"
+            android:id="@+id/title_player_musicName_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -37,7 +37,7 @@
             android:textColor="@color/colorWhite"/>
 
         <TextView
-            android:id="@+id/title_player_singer"
+            android:id="@+id/title_player_singer_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

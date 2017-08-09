@@ -1,16 +1,26 @@
 package my.com.fragment;
 
-import android.app.Fragment;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import my.com.PlayerActivity;
 import my.com.R;
+import my.com.fragment.childfragment.ChildFragment_Index_Musiclist;
+import my.com.fragment.childfragment.ChildFragment_Index_Ranking;
+import my.com.fragment.childfragment.ChildFragment_Index_Recommend;
 
 /**
  * Created by MY on 2017/7/20.
@@ -21,13 +31,39 @@ public class IndexFragment extends Fragment implements View.OnClickListener{
     private View rootview;
 
     private ImageView title_index_playing;
+    private TextView title_index_musiclist;
+    private TextView title_index_recommend;
+    private TextView title_index_ranking;
+
+    private ViewPager mViewPager;
+    private FragmentPagerAdapter mFragmentPagerAdapter;
+    private List<Fragment> mList;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        rootview = inflater.inflate(R.layout.fragment_index,null);
 
-        initView(rootview);
+        if(rootview == null){
+//            //通过 LayoutInflater 的 inflate() 方法将 fragment_index 布局动态加载进来
+//            View view = inflater.inflate(R.layout.fragment_index, container, false);
+            rootview = inflater.inflate(R.layout.fragment_index, null);
+
+            initView(rootview);
+
+            init_ViewPager(rootview);
+
+        }
+
+        /*
+         * 底部导航栏切换后 由于没有销毁顶部设置导致如果没有重新设置view
+         * 导致底部切换后切回顶部页面数据会消失等bug
+         * 以下设置每次重新创建view即可
+         */
+//        ViewGroup parent = (ViewGroup) rootview.getParent();
+//        if (parent != null) {
+//            parent.removeView(rootview);
+//        }
+
 
         return rootview;
     }
@@ -35,6 +71,46 @@ public class IndexFragment extends Fragment implements View.OnClickListener{
     private void initView(View v){
         title_index_playing = (ImageView) v.findViewById(R.id.title_index_playing);
         title_index_playing.setOnClickListener(this);
+
+        title_index_musiclist = (TextView) v.findViewById(R.id.title_index_musiclist);
+        title_index_musiclist.setOnClickListener(this);
+        title_index_recommend = (TextView) v.findViewById(R.id.title_index_recommend);
+        title_index_recommend.setOnClickListener(this);
+        title_index_ranking = (TextView) v.findViewById(R.id.title_index_ranking);
+        title_index_ranking.setOnClickListener(this);
+
+    }
+
+    private void init_ViewPager(View v){
+        mViewPager = (ViewPager) v.findViewById(R.id.viewpager_index);
+
+        mList = new ArrayList<Fragment>();
+        ChildFragment_Index_Musiclist childFragment_index_musiclist = new ChildFragment_Index_Musiclist();
+        ChildFragment_Index_Recommend childFragment_index_recommend = new ChildFragment_Index_Recommend();
+        ChildFragment_Index_Ranking childFragment_index_ranking = new ChildFragment_Index_Ranking();
+        mList.add(childFragment_index_musiclist);
+        mList.add(childFragment_index_recommend);
+        mList.add(childFragment_index_ranking);
+
+        mFragmentPagerAdapter = new FragmentPagerAdapter(getActivity().getSupportFragmentManager()) {
+            @Override
+            public Fragment getItem(int position) {
+                return mList.get(position);
+            }
+
+            @Override
+            public int getCount() {
+                return mList.size();
+            }
+        };
+
+        mViewPager.setAdapter(mFragmentPagerAdapter);
+
+        mViewPager.setCurrentItem(1);
+
+        mViewPager.setOffscreenPageLimit(3);
+
+//        mViewPager.setOnPageChangeListener();
     }
 
     @Override
@@ -45,6 +121,19 @@ public class IndexFragment extends Fragment implements View.OnClickListener{
                 Intent intent = new Intent(getActivity(), PlayerActivity.class);
                 getActivity().startActivity(intent);
                 //getActivity().startActivity(new Intent().setClass(getActivity(), PlayerActivity.class));
+                getActivity().overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
+                break;
+
+            case R.id.title_index_musiclist :
+                mViewPager.setCurrentItem(0);
+                break;
+
+            case R.id.title_index_recommend :
+                mViewPager.setCurrentItem(1);
+                break;
+
+            case R.id.title_index_ranking :
+                mViewPager.setCurrentItem(2);
                 break;
         }
     }
