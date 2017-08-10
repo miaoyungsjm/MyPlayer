@@ -17,4 +17,12 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowActionBar">false</item>
     </style>
+
+    <!-- PopupWindow 的动画 - 从下往上 -->
+    <style name="PopupWindowAnim" parent="@android:style/Animation.Activity">
+        <item name="android:windowEnterAnimation">@anim/translate_in</item>
+        <item name="android:windowExitAnimation">@anim/translate_out</item>
+    </style>
+
+
 </resources>

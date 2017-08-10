@@ -21,7 +21,7 @@ public class PersonFragment extends Fragment {
 
     private View rootview;
 
-    private ImageView title_person_playing;
+    private ImageView title_person_playing_iv;
 
     @Nullable
     @Override
@@ -34,12 +34,13 @@ public class PersonFragment extends Fragment {
     }
 
     private void initView(View v){
-        title_person_playing = (ImageView) v.findViewById(R.id.title_person_playing);
-        title_person_playing.setOnClickListener(new View.OnClickListener() {
+        title_person_playing_iv = (ImageView) v.findViewById(R.id.title_person_playing_iv);
+        title_person_playing_iv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), PlayerActivity.class);
                 getActivity().startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
             }
         });
     }

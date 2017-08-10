@@ -5,7 +5,7 @@
     android:background="@color/colorAccent">
 
     <ImageView
-        android:id="@+id/title_index_search"
+        android:id="@+id/title_index_search_iv"
         android:layout_width="17dp"
         android:layout_height="17dp"
         android:layout_centerVertical="true"
@@ -15,7 +15,7 @@
 
 
     <LinearLayout
-        android:id="@+id/title_index_options"
+        android:id="@+id/title_index_options_ll"
         android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -23,7 +23,7 @@
         android:layout_centerHorizontal="true">
 
         <TextView
-            android:id="@+id/title_index_musiclist"
+            android:id="@+id/title_index_musiclist_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -33,7 +33,7 @@
             android:textColor="@color/colorWhite"/>
 
         <TextView
-            android:id="@+id/title_index_recommend"
+            android:id="@+id/title_index_recommend_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -43,7 +43,7 @@
             android:textColor="@color/colorWhite"/>
 
         <TextView
-            android:id="@+id/title_index_ranking"
+            android:id="@+id/title_index_ranking_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -55,7 +55,7 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/title_index_playing"
+        android:id="@+id/title_index_playing_iv"
         android:layout_width="18dp"
         android:layout_height="18dp"
         android:layout_centerVertical="true"

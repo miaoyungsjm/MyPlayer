@@ -1,5 +1,6 @@
 package my.com;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -12,10 +13,16 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.ViewPager;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,7 +54,11 @@ public class PlayerActivity extends Activity {
     private ImageView player_mplay_iv;          //播放按钮
     private ImageView player_mnext_iv;          //下一首按钮
     private ImageView player_mlast_iv;          //上一首按钮
+    private ImageView player_mlist_iv;
     private ImageView title_player_hide_iv;        // 左上角返回键
+
+    //  PopupWindow
+    private PopupWindow mPopupWindow;       //  播放列表
 
     private VolumeChangeReceiver volumeChangeReceiver;      // 系统音量广播接收器（内部类对象）
 
@@ -132,6 +143,7 @@ public class PlayerActivity extends Activity {
         player_mplay_iv = (ImageView) findViewById(R.id.player_mplay_iv);
         player_mnext_iv = (ImageView) findViewById(R.id.player_mnext_iv);
         player_mlast_iv = (ImageView) findViewById(R.id.player_mlast_iv);
+        player_mlist_iv = (ImageView) findViewById(R.id.player_mlist_iv);
     }
 
     /*
@@ -286,6 +298,7 @@ public class PlayerActivity extends Activity {
         Intent intent = new Intent(PlayerActivity.this, PlayerService.class);
         intent.putExtra("musicname", "music.mp3");      //  传入播放的歌名
 
+
         //  启动服务 PlayerService
         startService(intent);
         Log.d(TAG, "    startService(startIntent)");
@@ -306,6 +319,7 @@ public class PlayerActivity extends Activity {
         player_mplay_iv.setOnClickListener(mOnClickListener);
         player_mnext_iv.setOnClickListener(mOnClickListener);
         player_mlast_iv.setOnClickListener(mOnClickListener);
+        player_mlist_iv.setOnClickListener(mOnClickListener);
         title_player_hide_iv.setOnClickListener(mOnClickListener);
 
         // 设置拖动条事件监听器， progress_seekBarChangeListener 为对应监听方法的对象（内部类）
@@ -343,6 +357,13 @@ public class PlayerActivity extends Activity {
                     mLast("music3.mp3");
                     break;
 
+                case R.id.player_mlist_iv:
+
+                    //  显示播放列表 PopUpWindow
+                    showPopupWindow();
+
+                    break;
+
                 case R.id.title_player_hide_iv:
                     // 测试关闭服务
 //                    Intent stopIntent = new Intent(PlayerActivity.this, PlayerService.class);
@@ -355,6 +376,7 @@ public class PlayerActivity extends Activity {
 
                     Intent goBack_Intent = new Intent(PlayerActivity.this, MainActivity.class);
                     startActivity(goBack_Intent);
+                    overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
             }
         }
     };
@@ -386,6 +408,34 @@ public class PlayerActivity extends Activity {
 
         player_mplay_iv.setSelected(true);
         isPlay = true;
+    }
+
+    //  实例化并显示 PopupWindow
+    private void showPopupWindow(){
+
+        //  获取屏幕的宽高像素
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int screenWidth = metrics.widthPixels;
+        int screenHeight = metrics.heightPixels;
+
+        //  用 LayoutInflater 获取 R.layout.popuplayout 对应的View
+        View contentView = LayoutInflater.from(PlayerActivity.this).inflate(R.layout.popupwindow_playlist, null);
+        //  PopupWindow 构造函数
+        mPopupWindow = new PopupWindow(contentView,
+                screenWidth, (screenHeight / 3 * 2), true);
+        mPopupWindow.setContentView(contentView);
+
+        //  设置动画
+        mPopupWindow.setAnimationStyle(R.style.PopupWindowAnim);
+
+        //  将 PopupWindow 的实例放在一个父容器中
+        View rootView = LayoutInflater.from(PlayerActivity.this).inflate(R.layout.activity_player, null);
+        mPopupWindow.showAtLocation(rootView, Gravity.BOTTOM, 0, 0);
+
+        //  关闭 PopupWindow
+//        mPopupWindow.dismiss();
+
     }
 
 

@@ -181,7 +181,7 @@ public class PlayerService extends Service{
                         intent_playInfo.putExtra("type", 1);
                         intent_playInfo.putExtra("currentprogress", currentProgress);
                         mLocalBroadcastManager.sendBroadcast(intent_playInfo);
-                        Log.i(TAG," -- Timer : sendBroadcast(intent_playInfo)" +
+                        Log.i(TAG," -- Timer : mLocalBroadcastManager.sendBroadcast(intent_playInfo)" +
                                 "  type = 1" +
                                 "  currentprogress = " + currentProgress);
                     }
@@ -214,7 +214,7 @@ public class PlayerService extends Service{
     }
 
     public void init_MediaPlayer(){
-        Log.i(TAG, "  init_mediaplayer()");
+        Log.i(TAG, " -- init_MediaPlayer()");
 
         File file = new File("/sdcard/Files/", musicName);
         Log.i(TAG,"    file.getAbsolutePath() :" + file.getAbsolutePath());
@@ -233,6 +233,8 @@ public class PlayerService extends Service{
                 mMediaPlayer.setDataSource(file.getAbsolutePath());
                 Log.i(TAG,"  mMediaPlayer.setDataSource(file.getAbsolutePath())\n" +
                         "    file.getAbsolutePath() = " + file.getAbsolutePath());
+
+
                 // 数据异步缓冲
                 mMediaPlayer.prepareAsync();
                 Log.i(TAG,"  mMediaPlayer.prepareAsync()");

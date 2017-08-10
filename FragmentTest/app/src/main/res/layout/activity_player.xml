@@ -104,6 +104,7 @@
             android:layout_height="match_parent">
 
             <ImageView
+                android:id="@+id/player_mmode_iv"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_centerVertical="true"
@@ -138,6 +139,7 @@
                 android:background="@drawable/m_next"/>
 
             <ImageView
+                android:id="@+id/player_mlist_iv"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_centerVertical="true"

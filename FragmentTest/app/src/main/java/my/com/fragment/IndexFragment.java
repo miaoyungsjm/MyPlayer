@@ -30,10 +30,10 @@ public class IndexFragment extends Fragment implements View.OnClickListener{
 
     private View rootview;
 
-    private ImageView title_index_playing;
-    private TextView title_index_musiclist;
-    private TextView title_index_recommend;
-    private TextView title_index_ranking;
+    private ImageView title_index_playing_iv;
+    private TextView title_index_musiclist_tv;
+    private TextView title_index_recommend_tv;
+    private TextView title_index_ranking_tv;
 
     private ViewPager mViewPager;
     private FragmentPagerAdapter mFragmentPagerAdapter;
@@ -69,15 +69,15 @@ public class IndexFragment extends Fragment implements View.OnClickListener{
     }
 
     private void initView(View v){
-        title_index_playing = (ImageView) v.findViewById(R.id.title_index_playing);
-        title_index_playing.setOnClickListener(this);
+        title_index_playing_iv = (ImageView) v.findViewById(R.id.title_index_playing_iv);
+        title_index_playing_iv.setOnClickListener(this);
 
-        title_index_musiclist = (TextView) v.findViewById(R.id.title_index_musiclist);
-        title_index_musiclist.setOnClickListener(this);
-        title_index_recommend = (TextView) v.findViewById(R.id.title_index_recommend);
-        title_index_recommend.setOnClickListener(this);
-        title_index_ranking = (TextView) v.findViewById(R.id.title_index_ranking);
-        title_index_ranking.setOnClickListener(this);
+        title_index_musiclist_tv = (TextView) v.findViewById(R.id.title_index_musiclist_tv);
+        title_index_musiclist_tv.setOnClickListener(this);
+        title_index_recommend_tv = (TextView) v.findViewById(R.id.title_index_recommend_tv);
+        title_index_recommend_tv.setOnClickListener(this);
+        title_index_ranking_tv = (TextView) v.findViewById(R.id.title_index_ranking_tv);
+        title_index_ranking_tv.setOnClickListener(this);
 
     }
 
@@ -117,22 +117,22 @@ public class IndexFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId())
         {
-            case R.id.title_index_playing :
+            case R.id.title_index_playing_iv :
                 Intent intent = new Intent(getActivity(), PlayerActivity.class);
                 getActivity().startActivity(intent);
                 //getActivity().startActivity(new Intent().setClass(getActivity(), PlayerActivity.class));
                 getActivity().overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
                 break;
 
-            case R.id.title_index_musiclist :
+            case R.id.title_index_musiclist_tv :
                 mViewPager.setCurrentItem(0);
                 break;
 
-            case R.id.title_index_recommend :
+            case R.id.title_index_recommend_tv :
                 mViewPager.setCurrentItem(1);
                 break;
 
-            case R.id.title_index_ranking :
+            case R.id.title_index_ranking_tv :
                 mViewPager.setCurrentItem(2);
                 break;
         }
