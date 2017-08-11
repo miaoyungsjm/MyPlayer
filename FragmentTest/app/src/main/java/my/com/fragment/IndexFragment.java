@@ -18,6 +18,7 @@ import java.util.List;
 
 import my.com.PlayerActivity;
 import my.com.R;
+import my.com.adapter.MyFragmentPagerAdapter;
 import my.com.fragment.childfragment.ChildFragment_Index_Musiclist;
 import my.com.fragment.childfragment.ChildFragment_Index_Ranking;
 import my.com.fragment.childfragment.ChildFragment_Index_Recommend;
@@ -36,7 +37,8 @@ public class IndexFragment extends Fragment implements View.OnClickListener{
     private TextView title_index_ranking_tv;
 
     private ViewPager mViewPager;
-    private FragmentPagerAdapter mFragmentPagerAdapter;
+//    private FragmentPagerAdapter mFragmentPagerAdapter;
+    private MyFragmentPagerAdapter myFragmentPagerAdapter;
     private List<Fragment> mList;
 
     @Nullable
@@ -92,19 +94,23 @@ public class IndexFragment extends Fragment implements View.OnClickListener{
         mList.add(childFragment_index_recommend);
         mList.add(childFragment_index_ranking);
 
-        mFragmentPagerAdapter = new FragmentPagerAdapter(getActivity().getSupportFragmentManager()) {
-            @Override
-            public Fragment getItem(int position) {
-                return mList.get(position);
-            }
+        //  配置适配器，两种写法选一种
+//        mFragmentPagerAdapter = new FragmentPagerAdapter(getActivity().getSupportFragmentManager()) {
+//            @Override
+//            public Fragment getItem(int position) {
+//                return mList.get(position);
+//            }
+//
+//            @Override
+//            public int getCount() {
+//                return mList.size();
+//            }
+//        };
+        myFragmentPagerAdapter = new MyFragmentPagerAdapter(getActivity().getSupportFragmentManager(), mList);
+//        myFragmentPagerAdapter = new MyFragmentPagerAdapter(getChildFragmentManager(), mList);
+        //  两种 FragmentManager() 区别有待发现！！！
 
-            @Override
-            public int getCount() {
-                return mList.size();
-            }
-        };
-
-        mViewPager.setAdapter(mFragmentPagerAdapter);
+        mViewPager.setAdapter(myFragmentPagerAdapter);
 
         mViewPager.setCurrentItem(1);
 

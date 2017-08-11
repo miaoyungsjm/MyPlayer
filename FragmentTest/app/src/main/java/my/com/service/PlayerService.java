@@ -88,7 +88,7 @@ public class PlayerService extends Service{
         }
         public void mPause(){
             Log.i(TAG, " -- PlayerControlBinder : mPause");
-            mMediaPlayer.pause();
+            if(mMediaPlayer.isPlaying())mMediaPlayer.pause();
         }
         public void mSeekTo(int msec){
             Log.i(TAG, " -- PlayerControlBinder : mSeekTo");
