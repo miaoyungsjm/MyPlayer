@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
@@ -66,7 +67,8 @@ public class PlayerActivity extends Activity {
     private PopupWindow mPopupWindow;       //  播放列表
     private List<PlayInfo> mPlayInfoList;
     private PlayListArrayAdapter mPlaylistArrayAdapter;
-    private int mItemPosition;
+    private int mItemClickPosition;
+    private int mItemLastPosition;
 
     private VolumeChangeReceiver volumeChangeReceiver;      // 系统音量广播接收器（内部类对象）
 
@@ -430,24 +432,33 @@ public class PlayerActivity extends Activity {
         //  用 LayoutInflater 获取 R.layout.popuplayout 对应的View
         View contentView = LayoutInflater.from(PlayerActivity.this).inflate(R.layout.popupwindow_playlist, null);
         //  PopupWindow 构造函数
-        mPopupWindow = new PopupWindow(contentView,
-                screenWidth, (screenHeight / 3 * 2), true);
+        mPopupWindow = new PopupWindow(contentView, screenWidth, (screenHeight / 3 * 2), true);
         mPopupWindow.setContentView(contentView);
 
 
-
         //  初始化 playlist_ListView 播放列表
-        init_playlist_ListView(contentView);
+        init_playlist_listView(contentView);
 
 
-        //  外部是否可以点击，即如果点击PopupWindow以外的区域，PopupWindow是否会消失
+        //  外部可点击，即点击 PopupWindow 以外的区域，PopupWindow 消失
         mPopupWindow.setBackgroundDrawable(new BitmapDrawable());
         mPopupWindow.setOutsideTouchable(true);
 
-        //  设置动画
+        LinearLayout playlist_clear_ll = (LinearLayout) contentView.findViewById(R.id.playlist_clear_ll);
+        playlist_clear_ll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mPlayInfoList != null && mPlaylistArrayAdapter != null){
+                    mPlayInfoList.removeAll(mPlayInfoList);
+                    mPlaylistArrayAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+        //  设置启动关闭动画
         mPopupWindow.setAnimationStyle(R.style.PopupWindowAnim);
 
-        //  将 PopupWindow 的实例放在一个父容器中
+        //  将 PopupWindow 的实例放在一个父容器中，并定位
         View rootView = LayoutInflater.from(PlayerActivity.this).inflate(R.layout.activity_player, null);
         mPopupWindow.showAtLocation(rootView, Gravity.BOTTOM, 0, 0);
 
@@ -455,76 +466,117 @@ public class PlayerActivity extends Activity {
 //        mPopupWindow.dismiss();
 
     }
-    private void init_playlist_ListView(View v){
+    /*
+     *  初始化播放列表
+     */
+    private void init_playlist_listView(View v){
 
-        mPlayInfoList = new ArrayList<>();
+        ListView playlist_listView = (ListView) v.findViewById(R.id.playlist_listView);
 
-        //  向 mPlayInfoList 添加数据
-        for(int i = 0 ; i < 2 ; i++){
-            PlayInfo Apple = new PlayInfo("Apple");
-            mPlayInfoList.add(Apple);
-            PlayInfo Banana = new PlayInfo("Banana");
-            mPlayInfoList.add(Banana);
-            PlayInfo Orange = new PlayInfo("Orange");
-            mPlayInfoList.add(Orange);
-            PlayInfo Watermelon = new PlayInfo("Watermelon");
-            mPlayInfoList.add(Watermelon);
-            PlayInfo Pear = new PlayInfo("Pear");
-            mPlayInfoList.add(Pear);
-            PlayInfo Grape = new PlayInfo("Grape");
-            mPlayInfoList.add(Grape);
-            PlayInfo Pineapple = new PlayInfo("Pineapple");
-            mPlayInfoList.add(Pineapple);
-            PlayInfo Strawberry = new PlayInfo("Strawberry");
-            mPlayInfoList.add(Strawberry);
-            PlayInfo Cherry = new PlayInfo("Cherry");
-            mPlayInfoList.add(Cherry);
-            PlayInfo Mango = new PlayInfo("Mango");
-            mPlayInfoList.add(Mango);
+        if(mPlayInfoList == null){
+            mPlayInfoList = new ArrayList<>();
+
+            //  向 mPlayInfoList 添加数据
+            for(int i = 0 ; i < 2 ; i++){
+                PlayInfo Apple = new PlayInfo("Apple");
+                mPlayInfoList.add(Apple);
+                PlayInfo Banana = new PlayInfo("Banana");
+                mPlayInfoList.add(Banana);
+                PlayInfo Orange = new PlayInfo("Orange");
+                mPlayInfoList.add(Orange);
+                PlayInfo Watermelon = new PlayInfo("Watermelon");
+                mPlayInfoList.add(Watermelon);
+                PlayInfo Pear = new PlayInfo("Pear");
+                mPlayInfoList.add(Pear);
+                PlayInfo Grape = new PlayInfo("Grape");
+                mPlayInfoList.add(Grape);
+                PlayInfo Pineapple = new PlayInfo("Pineapple");
+                mPlayInfoList.add(Pineapple);
+                PlayInfo Strawberry = new PlayInfo("Strawberry");
+                mPlayInfoList.add(Strawberry);
+                PlayInfo Cherry = new PlayInfo("Cherry");
+                mPlayInfoList.add(Cherry);
+                PlayInfo Mango = new PlayInfo("Mango");
+                mPlayInfoList.add(Mango);
+            }
+
         }
 
-        mPlaylistArrayAdapter = new PlayListArrayAdapter(PlayerActivity.this,
-                R.layout.popupwindow_item_playinfo, mPlayInfoList);
+        if(mPlaylistArrayAdapter == null){
 
-//        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(PlayerActivity.this,
-//                android.R.layout.simple_list_item_1, data);
+            mPlaylistArrayAdapter = new PlayListArrayAdapter(PlayerActivity.this,
+                    R.layout.popupwindow_item_playinfo, mPlayInfoList);
 
-        ListView playlist_ListView = (ListView) v.findViewById(R.id.playlist_ListView);
-        playlist_ListView.setAdapter(mPlaylistArrayAdapter);
+
+//            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(PlayerActivity.this,
+//                    android.R.layout.simple_list_item_1, data);
+        }
+
+        playlist_listView.setAdapter(mPlaylistArrayAdapter);
 
         //  当点击了 ListView 的 item ，可以通过 position 参数判断点了什么
-        playlist_ListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        playlist_listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                mItemPosition = position;
+                mItemClickPosition = position;
+                mItemLastPosition = PlayInfo.mPlayPosition;        //  获取 PlayInfo 静态变量 mPlayPosition
 
-                PlayInfo playInfo = mPlayInfoList.get(mItemPosition);
-                Toast.makeText(PlayerActivity.this, playInfo.getmName(), Toast.LENGTH_SHORT).show();
+                PlayInfo next_playInfo = mPlayInfoList.get(mItemClickPosition);
+                Toast.makeText(PlayerActivity.this, next_playInfo.getmName(), Toast.LENGTH_SHORT).show();
 
-                TextView playinfo_name_tv = (TextView) view.findViewById(R.id.playinfo_name_tv);
-                playinfo_name_tv.setTextColor(getResources().getColor(R.color.colorAccent));
+                /*
+                 *  ！！！修复修复 ListView All BUG ！！！
+                 *
+                    TextView tv = (TextView) view.findViewById(R.id.playinfo_name_tv);
+                    tv.setText("Change item");
+                    tv.setTextColor(getResources().getColor(R.color.colorAccent));
 
-                ImageView playinfo_cancel_iv = (ImageView) view.findViewById(R.id.playinfo_cancel_iv);
-                playinfo_cancel_iv.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(PlayerActivity.this, "Delete", Toast.LENGTH_SHORT).show();
+                 *  因为 mPlaylistArrayAdapter.notifyDataSetChanged() 或者滚动都会重新调用 getView()
+                 *  TextView.setText 就算改变文本，重新加载也没了
+                 *  解决：直接改 playInfo 对象数据  -  playInfo.mName = "";
+                 *
+                 *  TextView.setColor 能改变颜色，但不能保留，而且颜色在滚动会错位
+                 *  解决：直接改 playInfo 对象数据  -  playInfo.mState = "" ，适配器再根据 playInfo.mState 的值做颜色修改
+                 *
+                 */
 
-                        mPlayInfoList.remove(mItemPosition);
+                //  修改内容
+//                next_playInfo.mName = "Change item";
 
 
-                    }
-                });
+                final PlayInfo last_playInfo = mPlayInfoList.get(mItemLastPosition);
+                last_playInfo.mState = false;    //  重置上一个对象
 
+                next_playInfo.mState = true;     //  选择点击的对象，按键状态设为被选择，通过适配器的 tv.setSelected(true) 改变背景颜色
+                PlayInfo.mPlayPosition = mItemClickPosition;     //  更新位置
 
-                //  不行呀！！！！！！！！！！！！！！！！！！！！！！  BUG
-//                mPlaylistArrayAdapter.notifyDataSetChanged();
-
+                //  刷新适配器
+                mPlaylistArrayAdapter.notifyDataSetChanged();
             }
         });
-
     }
+
+    /*
+     *  继续提高 ListView 的更新效率
+     *
+     *  更新 ListView 的一个 item
+     *  调用一次 getView() 方法
+     *
+     */
+//    private void updateItem(ListView listView, int position, PlayListArrayAdapter adapter) {
+//        /**第一个可见的位置**/
+//        int firstVisiblePosition = listView.getFirstVisiblePosition();
+//        /**最后一个可见的位置**/
+//        int lastVisiblePosition = listView.getLastVisiblePosition();
+//
+//        /**在看见范围内才更新，不可见的滑动后自动会调用getView方法更新**/
+//        if (position >= firstVisiblePosition && position <= lastVisiblePosition) {
+//            /**获取指定位置view对象**/
+//            View view = listView.getChildAt(position - firstVisiblePosition);
+//            adapter.getView(position, view, listView);
+//        }
+//    }
 
 
 

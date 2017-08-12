@@ -7,21 +7,18 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/playinfo_name_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="15dp"
             android:text="MusicName"
             android:textSize="15sp"
-            android:textColor="@color/colorBlack"/>
+            android:textColor="@drawable/poppuwindow_textview"/>
 
         <TextView
             android:id="@+id/playinfo_l"
@@ -45,11 +42,13 @@
 
         <ImageView
             android:id="@+id/playinfo_cancel_iv"
-            android:layout_width="14dp"
-            android:layout_height="14dp"
-            android:layout_alignParentRight="true"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="13dp"
             android:layout_centerVertical="true"
-            android:background="@drawable/m_cancel"/>
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/m_cancel"/>
 
     </RelativeLayout>
 

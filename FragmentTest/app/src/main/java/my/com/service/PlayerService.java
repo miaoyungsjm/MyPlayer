@@ -172,7 +172,7 @@ public class PlayerService extends Service{
             mTimerTask = new TimerTask() {
                 @Override
                 public void run() {
-                    Log.i(TAG," -- Timer : run()");
+//                    Log.i(TAG," -- Timer : run()");
                     if (mMediaPlayer != null && mMediaPlayer.isPlaying()){
                         //获取当前进度
                         currentProgress = mMediaPlayer.getCurrentPosition();

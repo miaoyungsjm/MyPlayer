@@ -104,7 +104,7 @@
         android:background="@color/colorGrey"/>
 
     <ListView
-        android:id="@+id/playlist_ListView"
+        android:id="@+id/playlist_listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

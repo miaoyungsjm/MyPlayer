@@ -6,9 +6,12 @@ package my.com.Data;
 
 public class PlayInfo {
 
-    private String mName;
-    private String mSinger;
-    private int mMaxProgress;
+    public static int mPlayPosition = 0 ;
+
+    public String mName;
+    public String mSinger;
+    public int mMaxProgress;
+    public boolean mState = false;
 
     /*
      *  构造函数
@@ -16,20 +19,21 @@ public class PlayInfo {
     public PlayInfo(String name){
         this.mName = name;
     }
+
+    public PlayInfo(String name, boolean state){
+        this.mName = name;
+        this.mState = state;
+    }
+
     public PlayInfo(String name, String singer){
         this.mName = name;
         this.mSinger = singer;
     }
 
-    public PlayInfo(String name, int maxProgress){
-        this.mName = name;
-        this.mMaxProgress = maxProgress;
-    }
-
-    public PlayInfo(String name, String singer, int maxProgress){
+    public PlayInfo(String name, String singer, boolean state){
         this.mName = name;
         this.mSinger = singer;
-        this.mMaxProgress = maxProgress;
+        this.mState = state;
     }
 
 
@@ -42,6 +46,10 @@ public class PlayInfo {
 
     public String getSinger(){
         return mSinger;
+    }
+
+    public boolean getState(){
+        return mState;
     }
 
     public int getMaxProgress(){
