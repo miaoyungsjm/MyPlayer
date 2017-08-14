@@ -110,7 +110,7 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="20dp"
-                android:background="@drawable/m_circulation"/>
+                android:background="@drawable/player_mode"/>
 
             <LinearLayout
                 android:layout_width="200dp"

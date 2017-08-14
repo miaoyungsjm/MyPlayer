@@ -43,11 +43,11 @@ public class PlayerService extends Service{
     private Timer mTimer;    //  定时器对象
     private TimerTask mTimerTask;
 
-    private boolean isLoop;     //  播放模式，是否单曲循环
-
     int count;      //  播放次数，判断第一次进入播放器界面，不用播放
 
+    private String musicPath;       //  播放路径
     private String musicName;       //  《你的名字》
+    private String singer;          //  歌手
 
     private static final String TAG = "PlayerService";         //  调试信息 TAG 标签
 
@@ -93,6 +93,16 @@ public class PlayerService extends Service{
         public void mSeekTo(int msec){
             Log.i(TAG, " -- PlayerControlBinder : mSeekTo");
             mMediaPlayer.seekTo(msec);
+        }
+        public void mToLoop(boolean isLoop){
+            Log.i(TAG, " -- PlayerControlBinder : mToLoop");
+            if(isLoop){            // 设置是否单曲循环
+                mMediaPlayer.setLooping(true);
+                Log.i(TAG, "    setLooping(true)");
+            }else {
+                mMediaPlayer.setLooping(false);
+                Log.i(TAG, "    setLooping(false)");
+            }
         }
     }
 
@@ -203,8 +213,11 @@ public class PlayerService extends Service{
         count++;        //  播放次数加一
 
         if(intent != null){
-            //  启动服务时，传入要播放的歌名
+            //  启动服务时，传入要播放的路径
+            musicPath = intent.getStringExtra("musicpath");
             musicName = intent.getStringExtra("musicname");
+            singer = intent.getStringExtra("singer");
+
 
             // 初始化多媒体播放器
             init_MediaPlayer();
@@ -216,7 +229,7 @@ public class PlayerService extends Service{
     public void init_MediaPlayer(){
         Log.i(TAG, " -- init_MediaPlayer()");
 
-        File file = new File("/sdcard/Files/", musicName);
+        File file = new File(musicPath);
         Log.i(TAG,"    file.getAbsolutePath() :" + file.getAbsolutePath());
 
         if(file.exists()){
@@ -252,27 +265,24 @@ public class PlayerService extends Service{
                         Intent intent_playInfo = new Intent(BroadcastAction.PlayInfoAction);
                         intent_playInfo.putExtra("type", 0);
                         intent_playInfo.putExtra("musicname", musicName);
+                        intent_playInfo.putExtra("singer", singer);
                         intent_playInfo.putExtra("maxprogress", maxProgress);
                         mLocalBroadcastManager.sendBroadcast(intent_playInfo);
                         Log.i(TAG,"  mLocalBroadcastManager.sendBroadcast(intent_playInfo)" +
                                 "  type = 0" +
                                 "  musicname = " + musicName +
+                                "  singer = " + singer +
                                 "  maxprogress = " + maxProgress);
 
                         // 此处不需要一启动服务就开始播放
                         if(count > 1)mp.start();
                         Log.i(TAG,"  mp.start()  播放开始");
-
-                        // 设置单曲循环
-                        isLoop = true;
-                        mp.setLooping(isLoop);
-                        Log.i(TAG,"  mp.setLooping(isLoop)  单曲循环");
                     }
                 });
 
 
                 /*
-                 * 设置 mMediaPlayer 播放完成监听器，做切歌操作
+                 *  设置 mMediaPlayer 播放完成监听器
                  */
                 mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
@@ -282,6 +292,16 @@ public class PlayerService extends Service{
 //                        // 无需关闭服务
 //                        stopSelf();
 //                        Log.i(TAG,"  stopSelf()  关闭服务");
+
+                        // 发送本地广播，告诉 PlayerActivity 播放结束
+                        Intent intent_playInfo = new Intent(BroadcastAction.PlayInfoAction);
+                        intent_playInfo.putExtra("type", 1);
+                        intent_playInfo.putExtra("currentprogress", 0);
+                        intent_playInfo.putExtra("isfinish", true);
+                        mLocalBroadcastManager.sendBroadcast(intent_playInfo);
+                        Log.i(TAG,"  mLocalBroadcastManager.sendBroadcast(intent_playInfo)" +
+                                "  type = 1" +
+                                "  currentprogress = " + currentProgress);
                     }
                 });
 

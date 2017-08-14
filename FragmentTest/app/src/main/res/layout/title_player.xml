@@ -6,12 +6,13 @@
 
     <ImageView
         android:id="@+id/title_player_hide_iv"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:padding="4dp"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="10dp"
-        android:background="@drawable/back" />
+        android:src="@drawable/back" />
 
 
     <LinearLayout

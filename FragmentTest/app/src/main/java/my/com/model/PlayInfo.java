@@ -1,4 +1,4 @@
-package my.com.Data;
+package my.com.model;
 
 /**
  * Created by MY on 2017/8/11.
@@ -10,12 +10,21 @@ public class PlayInfo {
 
     public String mName;
     public String mSinger;
-    public int mMaxProgress;
+    public int mDuration;
+
+    public String mPath;
+    public long mSize;
+
     public boolean mState = false;
 
     /*
      *  构造函数
      */
+
+    public PlayInfo() {
+        super();
+    }
+
     public PlayInfo(String name){
         this.mName = name;
     }
@@ -40,7 +49,12 @@ public class PlayInfo {
     /*
      *  方法
      */
-    public String getmName(){
+
+    public String getPath(){
+        return mPath;
+    }
+
+    public String getName(){
         return mName;
     }
 
@@ -52,7 +66,7 @@ public class PlayInfo {
         return mState;
     }
 
-    public int getMaxProgress(){
-        return mMaxProgress;
+    public int getDuration(){
+        return mDuration;
     }
 }

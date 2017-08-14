@@ -6,12 +6,13 @@
 
     <ImageView
         android:id="@+id/title_friend_addfriend_iv"
-        android:layout_width="20dp"
-        android:layout_height="17dp"
+        android:layout_width="30dp"
+        android:layout_height="27dp"
+        android:padding="4dp"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="10dp"
-        android:background="@drawable/addfriend" />
+        android:src="@drawable/addfriend" />
 
     <LinearLayout
         android:layout_width="220dp"
@@ -53,11 +54,12 @@
 
     <ImageView
         android:id="@+id/title_frinend_share_iv"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:padding="4dp"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dp"
-        android:background="@drawable/camera"/>
+        android:src="@drawable/camera"/>
 
 </RelativeLayout>
