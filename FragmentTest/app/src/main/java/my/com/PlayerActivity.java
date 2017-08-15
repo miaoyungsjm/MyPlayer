@@ -39,6 +39,7 @@ import my.com.utils.MusicUtils;
 
 /**
  * Created by MY on 2017/7/21.
+ *
  */
 
 public class PlayerActivity extends Activity {
@@ -247,7 +248,33 @@ public class PlayerActivity extends Activity {
                         if (isLoop){
                             player_mplay_iv.setSelected(true);
                             isPlay = true;
+                        }else{
+                            if(mPlayInfoList.size() > 0){       //  当播放列表不为空时才可以选择下一首
+                                //  重置正在播放的歌曲的状态
+                                PlayInfo tPlayInfo = mPlayInfoList.get(PlayInfo.mPlayPosition);
+                                tPlayInfo.mState = false;
+
+                                //  把当前的播放的歌曲改为新切换的
+                                if(PlayInfo.mPlayPosition < mPlayInfoList.size() - 1 ){
+                                    PlayInfo.mPlayPosition++ ;
+                                }else {
+                                    PlayInfo.mPlayPosition = 0;
+                                }
+                                //  设置选中歌曲的状态
+                                tPlayInfo = mPlayInfoList.get(PlayInfo.mPlayPosition);
+                                tPlayInfo.mState = true;
+
+                                mPlaylistArrayAdapter.notifyDataSetChanged();
+
+                                //  切歌（使用重启服务的方法）
+                                mSkip(mPlayInfoList.get(PlayInfo.mPlayPosition).getPath(),
+                                        mPlayInfoList.get(PlayInfo.mPlayPosition).getName(),
+                                        mPlayInfoList.get(PlayInfo.mPlayPosition).getSinger());
+                            }
                         }
+
+
+
                     }
 
                     /*
@@ -395,14 +422,14 @@ public class PlayerActivity extends Activity {
             switch (v.getId())
             {
                 case R.id.player_mplay_iv:
-                    if(isPlay == false){        //  播放状态
-                        player_mplay_iv.setSelected(true);
-                        isPlay = true;
-                        playerControlBinder.mPlay();
-                    } else {        //  暂停状态
+                    if (isPlay){        //  设置暂停状态
                         player_mplay_iv.setSelected(false);
                         isPlay = false;
                         playerControlBinder.mPause();
+                    } else {        //  设置播放状态
+                        player_mplay_iv.setSelected(true);
+                        isPlay = true;
+                        playerControlBinder.mPlay();
                     }
                     break;
 
@@ -422,6 +449,8 @@ public class PlayerActivity extends Activity {
                         //  设置选中歌曲的状态
                         tPlayInfo = mPlayInfoList.get(PlayInfo.mPlayPosition);
                         tPlayInfo.mState = true;
+
+//                        mPlaylistArrayAdapter.notifyDataSetChanged();
 
                         //  切歌（使用重启服务的方法）
                         mSkip(mPlayInfoList.get(PlayInfo.mPlayPosition).getPath(),
@@ -445,6 +474,8 @@ public class PlayerActivity extends Activity {
                         tPlayInfo = mPlayInfoList.get(PlayInfo.mPlayPosition);
                         tPlayInfo.mState = true;
 
+//                        mPlaylistArrayAdapter.notifyDataSetChanged();
+
                         mSkip(mPlayInfoList.get(PlayInfo.mPlayPosition).getPath(),
                                 mPlayInfoList.get(PlayInfo.mPlayPosition).getName(),
                                 mPlayInfoList.get(PlayInfo.mPlayPosition).getSinger());
@@ -453,14 +484,14 @@ public class PlayerActivity extends Activity {
 
 
                 case R.id.player_mmode_iv:
-                    if(isLoop == false){        //  设置单曲循环
-                        player_mmode_iv.setSelected(true);
-                        isLoop = true;
-                        playerControlBinder.mToLoop(isLoop);
-                    } else {        //  取消单曲循环
+                    if(isLoop){        //  取消单曲循环
                         player_mmode_iv.setSelected(false);
                         isLoop = false;
-                        playerControlBinder.mToLoop(isLoop);
+                        playerControlBinder.mToLoop(false);
+                    } else {        //  设置单曲循环
+                        player_mmode_iv.setSelected(true);
+                        isLoop = true;
+                        playerControlBinder.mToLoop(true);
                     }
                     break;
 
@@ -556,21 +587,32 @@ public class PlayerActivity extends Activity {
         LinearLayout playlist_mode_ll = (LinearLayout) contentView.findViewById(R.id.playlist_mode_ll);
         final ImageView playlist_mode_iv = (ImageView) contentView.findViewById(R.id.playlist_mode_iv);
         final TextView playlist_mode_tv = (TextView) contentView.findViewById(R.id.playlist_mode_tv);
+        //  判断当前播放模式
+        if(isLoop){
+            player_mmode_iv.setSelected(true);
+            playlist_mode_iv.setSelected(true);
+            playlist_mode_tv.setText("单曲循环");
+        } else {
+            player_mmode_iv.setSelected(false);
+            playlist_mode_iv.setSelected(false);
+            playlist_mode_tv.setText("列表循环");
+        }
+        //  设置点击事件监听器
         playlist_mode_ll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isLoop == false){        //  设置单曲循环
-                    player_mmode_iv.setSelected(true);
-                    playlist_mode_iv.setSelected(true);
-                    playlist_mode_tv.setText("单曲循环");
-                    isLoop = true;
-                    playerControlBinder.mToLoop(isLoop);
-                } else {        //  取消单曲循环
+                if(isLoop){        //  取消单曲循环
                     player_mmode_iv.setSelected(false);
                     playlist_mode_iv.setSelected(false);
                     playlist_mode_tv.setText("列表循环");
                     isLoop = false;
-                    playerControlBinder.mToLoop(isLoop);
+                    playerControlBinder.mToLoop(false);
+                } else {        //  设置单曲循环
+                    player_mmode_iv.setSelected(true);
+                    playlist_mode_iv.setSelected(true);
+                    playlist_mode_tv.setText("单曲循环");
+                    isLoop = true;
+                    playerControlBinder.mToLoop(true);
                 }
             }
         });

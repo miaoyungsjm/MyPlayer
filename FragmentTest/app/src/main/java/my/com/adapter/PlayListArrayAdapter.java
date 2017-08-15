@@ -98,7 +98,7 @@ public class PlayListArrayAdapter extends ArrayAdapter<PlayInfo>{
             @Override
             public void onClick(View v) {
                 Log.d(TAG, " -------------------------------------- Delete position : " + position);
-                if(position < PlayInfo.mPlayPosition)PlayInfo.mPlayPosition--;      //  更新对应的播放位置
+                if(position <= PlayInfo.mPlayPosition)PlayInfo.mPlayPosition--;      //  更新对应的播放位置
                 mList.remove(position);
                 notifyDataSetChanged();     //  更新适配器
             }
