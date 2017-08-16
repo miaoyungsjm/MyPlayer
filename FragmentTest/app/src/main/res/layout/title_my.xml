@@ -21,32 +21,12 @@
         android:layout_centerHorizontal="true">
 
         <TextView
-            android:id="@+id/title_my_video_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="视频"
-            android:textSize="15sp"
-            android:textColor="@color/colorWhite"/>
-
-        <TextView
             android:id="@+id/title_my_music_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="音乐"
-            android:textSize="15sp"
-            android:textColor="@color/colorWhite"/>
-
-        <TextView
-            android:id="@+id/title_my_favorite_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="收藏"
+            android:text="我的音乐"
             android:textSize="15sp"
             android:textColor="@color/colorWhite"/>
     </LinearLayout>

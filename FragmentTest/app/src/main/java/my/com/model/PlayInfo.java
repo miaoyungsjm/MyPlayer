@@ -19,8 +19,8 @@ public class PlayInfo {
 
     /*
      *  构造函数
+     *
      */
-
     public PlayInfo() {
         super();
     }

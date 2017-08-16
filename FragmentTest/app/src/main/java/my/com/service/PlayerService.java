@@ -43,7 +43,7 @@ public class PlayerService extends Service{
     private Timer mTimer;    //  定时器对象
     private TimerTask mTimerTask;
 
-    int count;      //  播放次数，判断第一次进入播放器界面，不用播放
+    int count = 0 ;      //  播放次数，判断第一次进入播放器界面，不用播放
 
     private String musicPath;       //  播放路径
     private String musicName;       //  《你的名字》
@@ -122,8 +122,6 @@ public class PlayerService extends Service{
         super.onCreate();
         Log.i(TAG, " ----- PlayerService : onCreate");
 
-        // 计算播放次数
-        count = 0;
 
         // 实例化本地广播管理器，使用本地广播发送播放信息
         if(mLocalBroadcastManager == null) {

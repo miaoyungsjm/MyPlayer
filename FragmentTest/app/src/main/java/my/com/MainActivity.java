@@ -35,6 +35,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     //  重写“返回键”所需变量
     private long mExitTime;     //  用于计算双击“返回键”的间隔时长
 
+    int mPosition = 0;
+
 
     private static final String TAG = "MainActivity";         // 调试信息 TAG 标签
 
@@ -161,7 +163,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
 
         //  替换 Fragment
-//        mFragmentTransaction.replace();
+//        mFragmentTransaction.replace(R.id.framelayout_main, getFragment(to),TAGS[to]);
 
         //  把 Fragment 返回栈
 //        mFragmentTransaction.addToBackStack(null);
@@ -180,6 +182,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private void showFragment(FragmentTransaction fragmentTransaction, int to) {
         switch (to) {
             case 0:
+                mPosition = 0;
                 if (indexfragment == null){
                     //  首次创建
                     indexfragment = new IndexFragment();
@@ -191,6 +194,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 break;
 
             case 1:
+                mPosition = 1;
                 if (myfragment == null){
                     myfragment = new MyFragment();
                     fragmentTransaction.add(R.id.framelayout_main, myfragment, tabs[to]);
@@ -200,6 +204,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 break;
 
             case 2:
+                mPosition = 2;
                 if (friendfragment == null){
                     friendfragment = new FriendFragment();
                     fragmentTransaction.add(R.id.framelayout_main, friendfragment, tabs[to]);
@@ -209,6 +214,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 break;
 
             case 3:
+                mPosition = 3;
                 if (personfragment == null){
                     personfragment = new PersonFragment();
                     fragmentTransaction.add(R.id.framelayout_main, personfragment, tabs[to]);
@@ -217,6 +223,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 }
                 break;
         }
+//        fragmentTransaction.addToBackStack(null);
         //  事务提交
         fragmentTransaction.commit();
     }
@@ -240,8 +247,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0){
-            mExit();
-            return true;
+            if(mPosition != 1){
+                mExit();
+                return true;
+            }
         }
         return super.onKeyDown(keyCode, event);
     }

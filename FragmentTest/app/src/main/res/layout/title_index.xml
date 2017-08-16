@@ -6,12 +6,13 @@
 
     <ImageView
         android:id="@+id/title_index_search_iv"
-        android:layout_width="17dp"
-        android:layout_height="17dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:padding="6dp"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="10dp"
-        android:background="@drawable/search" />
+        android:src="@drawable/search" />
 
 
     <LinearLayout

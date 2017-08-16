@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp">
+
+        <ImageView
+            android:id="@+id/my_item_pic_iv"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="10dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/music_red"/>
+
+        <TextView
+            android:id="@+id/my_item_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/my_item_pic_iv"
+            android:layout_marginLeft="10dp"
+            android:text="测试文字"
+            android:textSize="15sp"
+            android:textColor="@drawable/poppuwindow_textview"/>
+
+
+        <TextView
+            android:id="@+id/my_item_count_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/my_item_enter_iv"
+            android:text="100"
+            android:textSize="12sp"
+            android:textColor="@color/colorDimGrey"/>
+
+        <ImageView
+            android:id="@+id/my_item_enter_iv"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/enter_grey"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginLeft="40dp"
+        android:background="@color/colorGrey"/>
+
+</LinearLayout>

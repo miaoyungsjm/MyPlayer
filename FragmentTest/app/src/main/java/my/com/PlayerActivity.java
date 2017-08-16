@@ -380,9 +380,9 @@ public class PlayerActivity extends Activity {
         //  传入播放内容，其实只需一个 musicPath （音乐路径）就可以实现播放，
         //  其他两项用于当 MediaPlayer 缓冲加载成功之后，再显示出播放的信息，而不是直接显示
         Intent intent = new Intent(PlayerActivity.this, PlayerService.class);
-        intent.putExtra("musicpath", mPlayInfoList.get(PlayInfo.mPlayPosition).getPath());
-        intent.putExtra("musicname", mPlayInfoList.get(PlayInfo.mPlayPosition).getName());
-        intent.putExtra("singer", mPlayInfoList.get(PlayInfo.mPlayPosition).getSinger());
+        intent.putExtra("musicpath", tPlayInfo.getPath());
+        intent.putExtra("musicname", tPlayInfo.getName());
+        intent.putExtra("singer", tPlayInfo.getSinger());
 
 
         //  启动服务 PlayerService

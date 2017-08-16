@@ -40,7 +40,7 @@ public class PersonFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), PlayerActivity.class);
                 getActivity().startActivity(intent);
-                getActivity().overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
+                getActivity().overridePendingTransition(R.anim.translate_right_in, R.anim.translate_left_out);
             }
         });
     }

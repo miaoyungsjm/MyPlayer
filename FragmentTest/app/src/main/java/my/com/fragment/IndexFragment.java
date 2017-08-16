@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +17,7 @@ import java.util.List;
 
 import my.com.PlayerActivity;
 import my.com.R;
-import my.com.adapter.MyFragmentPagerAdapter;
+import my.com.adapter.MFragmentPagerAdapter;
 import my.com.fragment.childfragment.ChildFragment_Index_Musiclist;
 import my.com.fragment.childfragment.ChildFragment_Index_Ranking;
 import my.com.fragment.childfragment.ChildFragment_Index_Recommend;
@@ -38,7 +37,7 @@ public class IndexFragment extends Fragment implements View.OnClickListener{
 
     private ViewPager mViewPager;
 //    private FragmentPagerAdapter mFragmentPagerAdapter;
-    private MyFragmentPagerAdapter myFragmentPagerAdapter;
+    private MFragmentPagerAdapter mFragmentPagerAdapter;
     private List<Fragment> mList;
 
     @Nullable
@@ -106,11 +105,12 @@ public class IndexFragment extends Fragment implements View.OnClickListener{
 //                return mList.size();
 //            }
 //        };
-        myFragmentPagerAdapter = new MyFragmentPagerAdapter(getActivity().getSupportFragmentManager(), mList);
-//        myFragmentPagerAdapter = new MyFragmentPagerAdapter(getChildFragmentManager(), mList);
+
+//        mFragmentPagerAdapter = new MFragmentPagerAdapter(getActivity().getSupportFragmentManager(), mList);
+        mFragmentPagerAdapter = new MFragmentPagerAdapter(getChildFragmentManager(), mList);
         //  两种 FragmentManager() 区别有待发现！！！
 
-        mViewPager.setAdapter(myFragmentPagerAdapter);
+        mViewPager.setAdapter(mFragmentPagerAdapter);
 
         mViewPager.setCurrentItem(1);
 
@@ -127,7 +127,7 @@ public class IndexFragment extends Fragment implements View.OnClickListener{
                 Intent intent = new Intent(getActivity(), PlayerActivity.class);
                 getActivity().startActivity(intent);
                 //getActivity().startActivity(new Intent().setClass(getActivity(), PlayerActivity.class));
-                getActivity().overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
+                getActivity().overridePendingTransition(R.anim.translate_right_in, R.anim.translate_left_out);
                 break;
 
             case R.id.title_index_musiclist_tv :
