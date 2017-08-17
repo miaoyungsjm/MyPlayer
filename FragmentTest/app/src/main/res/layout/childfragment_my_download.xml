@@ -10,13 +10,14 @@
         android:background="@color/colorAccent">
 
         <ImageView
-            android:id="@+id/my_main_add_iv"
-            android:layout_width="17dp"
-            android:layout_height="17dp"
+            android:id="@+id/my_download_back_iv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:padding="5dp"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="10dp"
-            android:background="@drawable/add" />
+            android:src="@drawable/back" />
 
         <LinearLayout
             android:layout_width="220dp"
@@ -26,18 +27,18 @@
             android:layout_centerHorizontal="true">
 
             <TextView
-                android:id="@+id/my_main_title_tv"
+                android:id="@+id/my_download_title_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="我的音乐"
+                android:text="我的下载"
                 android:textSize="15sp"
                 android:textColor="@color/colorWhite"/>
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/my_main_playing_iv"
+            android:id="@+id/my_download_playing_iv"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:padding="6dp"
@@ -50,7 +51,7 @@
 
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/my_main_recyclerview"
+        android:id="@+id/my_download_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

@@ -185,10 +185,10 @@ public class PlayerService extends Service{
                         //获取当前进度
                         currentProgress = mMediaPlayer.getCurrentPosition();
 
-                        Intent intent_playInfo = new Intent(BroadcastAction.PlayInfoAction);
-                        intent_playInfo.putExtra("type", 1);
-                        intent_playInfo.putExtra("currentprogress", currentProgress);
-                        mLocalBroadcastManager.sendBroadcast(intent_playInfo);
+                        Intent intent = new Intent(BroadcastAction.PlayInfoProgressAction);
+                        intent.putExtra("currentprogress", currentProgress);
+
+                        mLocalBroadcastManager.sendBroadcast(intent);
                         Log.i(TAG," -- Timer : mLocalBroadcastManager.sendBroadcast(intent_playInfo)" +
                                 "  type = 1" +
                                 "  currentprogress = " + currentProgress);
@@ -260,14 +260,12 @@ public class PlayerService extends Service{
                         Log.i(TAG,"    maxProgress = " + maxProgress);
 
                         // 发送本地广播，告诉 PlayerActivity : Type, Name, MaxProgress
-                        Intent intent_playInfo = new Intent(BroadcastAction.PlayInfoAction);
-                        intent_playInfo.putExtra("type", 0);
-                        intent_playInfo.putExtra("musicname", musicName);
-                        intent_playInfo.putExtra("singer", singer);
-                        intent_playInfo.putExtra("maxprogress", maxProgress);
-                        mLocalBroadcastManager.sendBroadcast(intent_playInfo);
-                        Log.i(TAG,"  mLocalBroadcastManager.sendBroadcast(intent_playInfo)" +
-                                "  type = 0" +
+                        Intent intent = new Intent(BroadcastAction.PlayInfoDataAction);
+                        intent.putExtra("musicname", musicName);
+                        intent.putExtra("singer", singer);
+                        intent.putExtra("maxprogress", maxProgress);
+                        mLocalBroadcastManager.sendBroadcast(intent);
+                        Log.i(TAG,"  mLocalBroadcastManager.sendBroadcast(intent_playInfo)  " +
                                 "  musicname = " + musicName +
                                 "  singer = " + singer +
                                 "  maxprogress = " + maxProgress);
@@ -292,14 +290,13 @@ public class PlayerService extends Service{
 //                        Log.i(TAG,"  stopSelf()  关闭服务");
 
                         // 发送本地广播，告诉 PlayerActivity 播放结束
-                        Intent intent_playInfo = new Intent(BroadcastAction.PlayInfoAction);
-                        intent_playInfo.putExtra("type", 1);
-                        intent_playInfo.putExtra("currentprogress", 0);
-                        intent_playInfo.putExtra("isfinish", true);
-                        mLocalBroadcastManager.sendBroadcast(intent_playInfo);
-                        Log.i(TAG,"  mLocalBroadcastManager.sendBroadcast(intent_playInfo)" +
-                                "  type = 1" +
-                                "  currentprogress = " + currentProgress);
+                        Intent intent = new Intent(BroadcastAction.PlayInfoProgressAction);
+                        intent.putExtra("currentprogress", 0);
+                        intent.putExtra("isfinish", true);
+                        mLocalBroadcastManager.sendBroadcast(intent);
+                        Log.i(TAG,"  mLocalBroadcastManager.sendBroadcast(intent)  PlayInfoProgressAction  " +
+                                "  currentprogress = 0" +
+                                "  isfinish = true");
                     }
                 });
 

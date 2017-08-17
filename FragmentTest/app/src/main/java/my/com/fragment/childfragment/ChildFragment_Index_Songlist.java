@@ -13,12 +13,12 @@ import my.com.R;
  * Created by MY on 2017/8/8.
  */
 
-public class ChildFragment_Index_Musiclist extends Fragment{
+public class ChildFragment_Index_Songlist extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View root = inflater.inflate(R.layout.childfragment_index_musiclist, null);
+        View root = inflater.inflate(R.layout.childfragment_index_songlist, null);
 
         return root;
     }

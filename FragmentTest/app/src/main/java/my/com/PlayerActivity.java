@@ -204,101 +204,96 @@ public class PlayerActivity extends Activity {
     private class PlayInfoLocalReceiver extends BroadcastReceiver{
         @Override
         public void onReceive(Context context, Intent intent) {
-            //  对收到的本地广播进行分类，0 ：歌名、最大进度；1 ：当前进度
-            int to = intent.getIntExtra("type", -1);
-            switch (to){
-                case 0:
-                    str_musicName = intent.getStringExtra("musicname");
-                    str_singer = intent.getStringExtra("singer");
-                    maxProgress = intent.getIntExtra("maxprogress", -1);
-                    Log.d(TAG, " -- PlayInfoReceiver : onReceive()  type = 0" +
-                            "  musicname = " + str_musicName +
-                            "  musicname = " + str_singer +
-                            "  maxprogress = " + maxProgress);
 
-                    //  设置进度条的最大值
-                    player_progress_seekbar.setMax(maxProgress);
-                    Log.d(TAG,"  player_progress_seekbar.setMax(maxProgress)\n" +
-                            "    maxProgress = " + maxProgress);
+            String action = intent.getAction();
 
-                    //  <Textview> 控件 player_maxProgress_tv 显示进度条最大值
-                    str_maxProgress = String.format("%1$02d:%2$02d",(maxProgress/1000)/60,
-                            (maxProgress/1000)%60);
+            if(action.equals(BroadcastAction.PlayInfoDataAction)){
+                str_musicName = intent.getStringExtra("musicname");
+                str_singer = intent.getStringExtra("singer");
+                maxProgress = intent.getIntExtra("maxprogress", -1);
+                Log.d(TAG, " -- PlayInfoReceiver : onReceive()  PlayInfoDataAction  " +
+                        "  musicname = " + str_musicName +
+                        "  musicname = " + str_singer +
+                        "  maxprogress = " + maxProgress);
 
+                //  设置进度条的最大值
+                player_progress_seekbar.setMax(maxProgress);
+                Log.d(TAG,"  player_progress_seekbar.setMax(maxProgress)  " +
+                        "  maxProgress = " + maxProgress);
 
-                    title_player_musicName_tv.setText(str_musicName);
-                    title_player_singer_tv.setText(str_singer);
-                    player_maxProgress_tv.setText(str_maxProgress);
-                    break;
-
-                case 1:
-                    currentProgress = intent.getIntExtra("currentprogress", -1);
-                    isFinish = intent.getBooleanExtra("isfinish", false);
-                    Log.d(TAG, " -- PlayInfoReceiver : onReceive()  type = 1" +
-                            "    currentprogress = " + currentProgress +
-                            "    isFinish = " + isFinish);
-
-                    //  设置进度条的当前值
-                    if(isPlay)player_progress_seekbar.setProgress(currentProgress);
-
-                    if(isFinish){
-                        player_mplay_iv.setSelected(false);
-                        isPlay = false;
-
-                        if (isLoop){
-                            player_mplay_iv.setSelected(true);
-                            isPlay = true;
-                        }else{
-                            if(mPlayInfoList.size() > 0){       //  当播放列表不为空时才可以选择下一首
-                                //  重置正在播放的歌曲的状态
-                                PlayInfo tPlayInfo = mPlayInfoList.get(PlayInfo.mPlayPosition);
-                                tPlayInfo.mState = false;
-
-                                //  把当前的播放的歌曲改为新切换的
-                                if(PlayInfo.mPlayPosition < mPlayInfoList.size() - 1 ){
-                                    PlayInfo.mPlayPosition++ ;
-                                }else {
-                                    PlayInfo.mPlayPosition = 0;
-                                }
-                                //  设置选中歌曲的状态
-                                tPlayInfo = mPlayInfoList.get(PlayInfo.mPlayPosition);
-                                tPlayInfo.mState = true;
-
-                                mPlaylistArrayAdapter.notifyDataSetChanged();
-
-                                //  切歌（使用重启服务的方法）
-                                mSkip(mPlayInfoList.get(PlayInfo.mPlayPosition).getPath(),
-                                        mPlayInfoList.get(PlayInfo.mPlayPosition).getName(),
-                                        mPlayInfoList.get(PlayInfo.mPlayPosition).getSinger());
-                            }
-                        }
+                //  <Textview> 控件 player_maxProgress_tv 显示进度条最大值
+                str_maxProgress = String.format("%1$02d:%2$02d",(maxProgress/1000)/60,
+                        (maxProgress/1000)%60);
 
 
-
-                    }
-
-                    /*
-                     *  这个 isPlay 的布尔变量的使用原因
-                     *  因为服务正在播放音乐时是不断发送本地广播，为了告诉活动当前播放进度，
-                     *  而活动肯定要接收服务发过来的广播。但是，是否更新进度条可以有自身选择嘛
-                     *  比如，现在正在播歌，而我们想拖动进度条改变进度，如果不设置一个值来决定
-                     *  是否更新，我们在拖动的过程中，进度条会随着接收到的广播再次更新！
-                     *  那样进度条就会有跳来跳去 BUG
-                     */
-
-                    break;
-
-                default:
-                    Log.d(TAG,"    type = -1");
+                title_player_musicName_tv.setText(str_musicName);
+                title_player_singer_tv.setText(str_singer);
+                player_maxProgress_tv.setText(str_maxProgress);
             }
+
+
+            if(action.equals(BroadcastAction.PlayInfoProgressAction)) {
+                currentProgress = intent.getIntExtra("currentprogress", -1);
+                isFinish = intent.getBooleanExtra("isfinish", false);
+                Log.d(TAG, " -- PlayInfoReceiver : onReceive()  PlayInfoProgressAction  " +
+                        "  currentprogress = " + currentProgress +
+                        "  isFinish = " + isFinish);
+
+                //  设置进度条的当前值
+                if(isPlay)player_progress_seekbar.setProgress(currentProgress);
+                /*
+                 *  这个 isPlay 的布尔变量的使用原因
+                 *  因为服务正在播放音乐时是不断发送本地广播，为了告诉活动当前播放进度，
+                 *  而活动肯定要接收服务发过来的广播。但是，是否更新进度条可以有自身选择嘛
+                 *  比如，现在正在播歌，而我们想拖动进度条改变进度，如果不设置一个值来决定
+                 *  是否更新，我们在拖动的过程中，进度条会随着接收到的广播再次更新！
+                 *  那样进度条就会有跳来跳去 BUG
+                 */
+
+                if(isFinish){
+                    player_mplay_iv.setSelected(false);
+                    isPlay = false;
+
+                    if (isLoop){
+                        player_mplay_iv.setSelected(true);
+                        isPlay = true;
+                    }else{
+                        if(mPlayInfoList.size() > 0){       //  当播放列表不为空时才可以选择下一首
+                            //  重置正在播放的歌曲的状态
+                            PlayInfo tPlayInfo = mPlayInfoList.get(PlayInfo.mPlayPosition);
+                            tPlayInfo.mState = false;
+
+                            //  把当前的播放的歌曲改为新切换的
+                            if(PlayInfo.mPlayPosition < mPlayInfoList.size() - 1 ){
+                                PlayInfo.mPlayPosition++ ;
+                            }else {
+                                PlayInfo.mPlayPosition = 0;
+                            }
+                            //  设置选中歌曲的状态
+                            tPlayInfo = mPlayInfoList.get(PlayInfo.mPlayPosition);
+                            tPlayInfo.mState = true;
+
+                            mPlaylistArrayAdapter.notifyDataSetChanged();
+
+                            //  切歌（使用重启服务的方法）
+                            mSkip(mPlayInfoList.get(PlayInfo.mPlayPosition).getPath(),
+                                    mPlayInfoList.get(PlayInfo.mPlayPosition).getName(),
+                                    mPlayInfoList.get(PlayInfo.mPlayPosition).getSinger());
+                        }
+                    }
+                }
+            }
+
         }
     }
     //  本地广播接收器的注册
     private void playinfo_local_receiver_register(){
-        IntentFilter playinfo_intentFilter = new IntentFilter();
-        playinfo_intentFilter.addAction(BroadcastAction.PlayInfoAction);// "com.my.broadcast.PLAYINFO_LOCAL_ACTION"
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BroadcastAction.PlayInfoDataAction);
+        intentFilter.addAction(BroadcastAction.PlayInfoProgressAction);
+
         playInfoLocalReceiver = new PlayInfoLocalReceiver();
-        mLocalBroadcastManager.registerReceiver(playInfoLocalReceiver, playinfo_intentFilter);
+        mLocalBroadcastManager.registerReceiver(playInfoLocalReceiver, intentFilter);
         Log.d(TAG," -- mLocalBroadcastManager.registerReceiver(playInfoLocalReceiver, intentFilter)\n");
     }
 
@@ -515,7 +510,7 @@ public class PlayerActivity extends Activity {
                     //  MainActivity 的启动模式被修改为 singleTop ，这里跳转有点不一样
                     Intent goBack_Intent = new Intent(PlayerActivity.this, MainActivity.class);
                     startActivity(goBack_Intent);       //  跳转至 MainActivity
-                    overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);       //  跳转动画
+                    overridePendingTransition(R.anim.alpha_in, R.anim.translate_right_out);       //  跳转动画
             }
         }
     };
@@ -788,7 +783,7 @@ public class PlayerActivity extends Activity {
 
                 Intent intent = new Intent(PlayerActivity.this, MainActivity.class);
                 startActivity(intent);
-                overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
+                overridePendingTransition(R.anim.alpha_in, R.anim.translate_right_out);
                 return true;
 
 //            case KeyEvent.KEYCODE_VOLUME_UP :

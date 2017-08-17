@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,28 +18,41 @@ import java.util.List;
 
 import my.com.PlayerActivity;
 import my.com.R;
-import my.com.adapter.MyRecyclerViewAdapter;
-import my.com.model.MyMenu;
+import my.com.adapter.MyLocalRecyclerViewAdapter;
+import my.com.adapter.MyMainRecyclerViewAdapter;
+import my.com.model.MyMain;
+import my.com.model.PlayInfo;
 
 /**
  * Created by MY on 2017/8/16.
- * 
+ *
  */
 
 public class ChildFragment_My_Local extends Fragment{
 
     View root;
 
-    ImageView title_my_playing_iv;
+    ImageView my_local_playing_iv;
+    RecyclerView my_local_recyclerview;
+
+    private List<PlayInfo> mList;
+
+    private LocalBroadcastManager mLocalBroadcastManager;    //  本地广播管理
 
 
-    private List<MyMenu> mMenuList = new ArrayList<>();
+    private static final String TAG = "ChildFragment_My_Local";
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.i(TAG, " ----- ChildFragment_My_Local : onCreateView()");
 
-        root = inflater.inflate(R.layout.childfragment_my_main, null);
+        root = inflater.inflate(R.layout.childfragment_my_loacl, null);
+
+        if(mLocalBroadcastManager == null){
+            mLocalBroadcastManager = LocalBroadcastManager.getInstance(getContext());
+        }
 
         initView(root);
 
@@ -47,58 +62,68 @@ public class ChildFragment_My_Local extends Fragment{
     }
 
     private void initView(View v){
-        title_my_playing_iv = (ImageView) v.findViewById(R.id.title_my_playing_iv);
+        my_local_playing_iv = (ImageView) v.findViewById(R.id.my_local_playing_iv);
 
-        title_my_playing_iv.setOnClickListener(new View.OnClickListener() {
+        my_local_playing_iv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), PlayerActivity.class);
                 getActivity().startActivity(intent);
-                getActivity().overridePendingTransition(R.anim.translate_right_in, R.anim.translate_left_out);
+                getActivity().overridePendingTransition(R.anim.translate_right_in, R.anim.alpha_out);
             }
         });
+
+
+        my_local_recyclerview = (RecyclerView) v.findViewById(R.id.my_local_recyclerview);
     }
 
     private void initRV(View v){
+        mList =  new ArrayList<>();
         //  添加测试数据
         for (int i = 0; i < 2 ; i++){
-            MyMenu Apple = new MyMenu(R.mipmap.ic_launcher, "Apple", 0);
-            mMenuList.add(Apple);
-            MyMenu Banana = new MyMenu(R.mipmap.ic_launcher, "Banana", 0);
-            mMenuList.add(Banana);
-            MyMenu Orange = new MyMenu(R.mipmap.ic_launcher, "Orange", 0);
-            mMenuList.add(Orange);
-            MyMenu Watermelon = new MyMenu(R.mipmap.ic_launcher, "Watermelon", 0);
-            mMenuList.add(Watermelon);
-            MyMenu Pear = new MyMenu(R.mipmap.ic_launcher, "Pear", 0);
-            mMenuList.add(Pear);
-            MyMenu Grape = new MyMenu(R.mipmap.ic_launcher, "Grape", 0);
-            mMenuList.add(Grape);
-            MyMenu Pineapple = new MyMenu(R.mipmap.ic_launcher, "Pineapple", 0);
-            mMenuList.add(Pineapple);
-            MyMenu Strawberry = new MyMenu(R.mipmap.ic_launcher, "Strawberry", 0);
-            mMenuList.add(Strawberry);
-            MyMenu Cherry = new MyMenu(R.mipmap.ic_launcher, "Cherry", 0);
-            mMenuList.add(Cherry);
-            MyMenu Mango = new MyMenu(R.mipmap.ic_launcher, "Mango", 0);
-            mMenuList.add(Mango);
+            PlayInfo Apple = new PlayInfo("Apple", "singer", 10);
+            mList.add(Apple);
+            PlayInfo Banana = new PlayInfo("Banana", "singer", 10);
+            mList.add(Banana);
+            PlayInfo Orange = new PlayInfo("Orange", "singer", 10);
+            mList.add(Orange);
+            PlayInfo Watermelon = new PlayInfo("Watermelon", "singer", 10);
+            mList.add(Watermelon);
+            PlayInfo Pear = new PlayInfo("Pear", "singer", 10);
+            mList.add(Pear);
+            PlayInfo Grape = new PlayInfo("Grape", "singer", 10);
+            mList.add(Grape);
+            PlayInfo Pineapple = new PlayInfo("Pineapple", "singer", 10);
+            mList.add(Pineapple);
+            PlayInfo Strawberry = new PlayInfo("Strawberry", "singer", 10);
+            mList.add(Strawberry);
+            PlayInfo Cherry = new PlayInfo("Cherry", "singer", 10);
+            mList.add(Cherry);
+            PlayInfo Mango = new PlayInfo("Mango", "singer", 10);
+            mList.add(Mango);
         }
 
 
-        RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.recyclerview_my);
+//        RecyclerView my_local_recyclerview = (RecyclerView) v.findViewById(R.id.my_local_recyclerview);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
-        recyclerView.setLayoutManager(layoutManager);
+        my_local_recyclerview.setLayoutManager(layoutManager);
 
-        MyRecyclerViewAdapter mMyRecyclerViewAdapter = new MyRecyclerViewAdapter(mMenuList, getContext());
+        MyLocalRecyclerViewAdapter mMyLocalRecyclerViewAdapter = new MyLocalRecyclerViewAdapter(mList, mLocalBroadcastManager);
 
-        recyclerView.setAdapter(mMyRecyclerViewAdapter);
+        my_local_recyclerview.setAdapter(mMyLocalRecyclerViewAdapter);
 
         //设置Item增加、移除动画
-//        recyclerView.setItemAnimator(new DefaultItemAnimator());
+//        my_local_recyclerview.setItemAnimator(new DefaultItemAnimator());
         //添加分割线
-//        recyclerView.addItemDecoration(new DividerItemDecoration( getActivity(), DividerItemDecoration.HORIZONTAL_LIST));
+//        my_local_recyclerview.addItemDecoration(new DividerItemDecoration( getActivity(), DividerItemDecoration.HORIZONTAL_LIST));
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.i(TAG, " ----- ChildFragment_My_Local : onDestroyView()");
     }
 }

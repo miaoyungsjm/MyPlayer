@@ -11,84 +11,95 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import my.com.R;
 import my.com.action.BroadcastAction;
-import my.com.adapter.MyRecyclerViewAdapter;
+import my.com.fragment.childfragment.ChildFragment_My_Download;
+import my.com.fragment.childfragment.ChildFragment_My_Favourite;
 import my.com.fragment.childfragment.ChildFragment_My_Local;
 import my.com.fragment.childfragment.ChildFragment_My_Main;
-import my.com.model.MyMenu;
 
 /**
  * Created by MY on 2017/7/20.
+ *
  */
 
 public class MyFragment extends Fragment {
 
-    private View rootview;
-
-    private FrameLayout framelayout_my;
+    private View root;
 
     private FragmentManager mFragmentManager;
     private Fragment childFragment_my_main, childFragment_my_local, childFragment_my_download, childFragment_my_favourite;
     private String[] tabs = new String[]{"main", "local", "download", "favourite"};        //  Fragment 标签
 
 
-    // PlayService 本地广播接收器（内部类对象）
+    //  本地广播接收器
     private LocalBroadcastManager mLocalBroadcastManager;    // 本地/局部广播管理器
-    private MYLocalReceiver mMYLocalReceiver;
+    private MYLocalReceiver mMYLocalReceiver;       //  接收器对象，内部类编写处理方法
 
 
     private static final String TAG = "MyFragment";         // 调试信息 TAG 标签
 
-    
+
+    /*
+     *  本地广播接收器
+     *
+     *  当收到 BroadcastAction.MyFragmentAction 广播，解析广播内容：jumpto
+     *  实现 ChildFragment 的页面跳转 showContent(to)
+     */
     private class MYLocalReceiver extends BroadcastReceiver{
         @Override
         public void onReceive(Context context, Intent intent) {
             int to = intent.getIntExtra("jumpto", 0);
-            Log.d(TAG, " -- MYLocalReceiver : onReceive()\n" +
-                    "    jumpto = " + to);
+            Log.d(TAG, " -- MYLocalReceiver : onReceive()  " +
+                    "  jumpto = " + to);
 
             showContent(to);
         }
     }
-    //  注册本地广播接收器
-    private void myfragment_local_receiver_register(){
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BroadcastAction.MyFragmentAction);// "com.my.broadcast.PLAYINFO_LOCAL_ACTION"
-        mMYLocalReceiver = new MYLocalReceiver();
-        mLocalBroadcastManager.registerReceiver(mMYLocalReceiver, intentFilter);
-        Log.i(TAG," -- mLocalBroadcastManager.registerReceiver(mMYLocalReceiver, intentFilter);\n");
+    //  注册 - 本地广播接收器
+    private void local_receiver_register(){
+        IntentFilter intentFilter = new IntentFilter();         //  过滤器
+        intentFilter.addAction(BroadcastAction.MyFragmentAction);
+
+        mMYLocalReceiver = new MYLocalReceiver();            //  实例化广播接收器对象
+        mLocalBroadcastManager.registerReceiver(mMYLocalReceiver, intentFilter);        //  绑定/注册广播接收器
+        Log.i(TAG," --  mLocalBroadcastManager.registerReceiver(mMYLocalReceiver, intentFilter)");
     }
 
 
 
+    /*
+     *   ----- MyFragment : onCreateView()
+     */
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        rootview = inflater.inflate(R.layout.fragment_my,null);
+
+        Log.i(TAG, " ----- MyFragment : onCreateView()");
+
+        root = inflater.inflate(R.layout.fragment_my, null);
 
         //  本地广播接收器的注册
-        mLocalBroadcastManager = LocalBroadcastManager.getInstance(getContext());
-        myfragment_local_receiver_register();
+        if(mLocalBroadcastManager == null) {
+            mLocalBroadcastManager = LocalBroadcastManager.getInstance(getContext());   //  实例化本地广播管理器
+            local_receiver_register();   //  注册/绑定
+        }
 
+        //  显示 ChildFragment_My_Main
         showContent(0);
 
-        return rootview;
+        return root;
     }
 
     private void showContent(int to){
         if(mFragmentManager == null){
+            //  实例化 FragmentManager ，注意是：getChildFragmentManager()
             mFragmentManager = getChildFragmentManager();
         }
 
@@ -121,39 +132,33 @@ public class MyFragment extends Fragment {
 
             case 1:
                 if (childFragment_my_local == null) {
-                    //  首次创建
                     childFragment_my_local = new ChildFragment_My_Local();
                     fragmentTransaction.add(R.id.framelayout_my, childFragment_my_local, tabs[to]);
                 } else {
-                    //  重新显示
                     fragmentTransaction.show(childFragment_my_local);
                 }
                 break;
 
             case 2:
                 if (childFragment_my_download == null) {
-                    //  首次创建
-                    childFragment_my_download = new ChildFragment_My_Local();
+                    childFragment_my_download = new ChildFragment_My_Download();
                     fragmentTransaction.add(R.id.framelayout_my, childFragment_my_download, tabs[to]);
                 } else {
-                    //  重新显示
                     fragmentTransaction.show(childFragment_my_download);
                 }
                 break;
 
             case 3:
                 if (childFragment_my_favourite == null) {
-                    //  首次创建
-                    childFragment_my_favourite = new ChildFragment_My_Local();
+                    childFragment_my_favourite = new ChildFragment_My_Favourite();
                     fragmentTransaction.add(R.id.framelayout_my, childFragment_my_favourite, tabs[to]);
                 } else {
-                    //  重新显示
                     fragmentTransaction.show(childFragment_my_favourite);
                 }
                 break;
         }
         //  把 Fragment 返回栈
-        fragmentTransaction.addToBackStack(null);
+//        fragmentTransaction.addToBackStack(null);
         //  事务提交
         fragmentTransaction.commit();
     }
@@ -162,8 +167,8 @@ public class MyFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.d(TAG, " ----- onDestroyView : " + TAG);
+        Log.i(TAG, " ----- MyFragment : onDestroyView()");
 
-        mLocalBroadcastManager.unregisterReceiver(mMYLocalReceiver);
+        mLocalBroadcastManager.unregisterReceiver(mMYLocalReceiver);    //  注销
     }
 }

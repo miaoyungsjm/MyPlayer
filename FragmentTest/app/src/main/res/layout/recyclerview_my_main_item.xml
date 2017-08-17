@@ -12,7 +12,7 @@
         android:paddingBottom="5dp">
 
         <ImageView
-            android:id="@+id/my_item_pic_iv"
+            android:id="@+id/my_main_item_pic_iv"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:padding="10dp"
@@ -22,11 +22,11 @@
             android:src="@drawable/music_red"/>
 
         <TextView
-            android:id="@+id/my_item_title_tv"
+            android:id="@+id/my_main_item_title_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/my_item_pic_iv"
+            android:layout_toRightOf="@id/my_main_item_pic_iv"
             android:layout_marginLeft="10dp"
             android:text="测试文字"
             android:textSize="15sp"
@@ -34,17 +34,17 @@
 
 
         <TextView
-            android:id="@+id/my_item_count_tv"
+            android:id="@+id/my_main_item_count_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/my_item_enter_iv"
+            android:layout_toLeftOf="@+id/my_main_item_enter_iv"
             android:text="100"
             android:textSize="12sp"
             android:textColor="@color/colorDimGrey"/>
 
         <ImageView
-            android:id="@+id/my_item_enter_iv"
+            android:id="@+id/my_main_item_enter_iv"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerVertical="true"

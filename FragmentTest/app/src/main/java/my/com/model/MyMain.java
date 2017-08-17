@@ -4,13 +4,13 @@ package my.com.model;
  * Created by MY on 2017/8/16.
  */
 
-public class MyMenu {
+public class MyMain {
 
     private int imageId;
     private String title;
     private int count;
 
-    public MyMenu(int imageId, String title, int count){
+    public MyMain(int imageId, String title, int count){
         this.imageId = imageId;
         this.title = title;
         this.count = count;

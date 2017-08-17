@@ -29,21 +29,12 @@ public class PlayInfo {
         this.mName = name;
     }
 
-    public PlayInfo(String name, boolean state){
-        this.mName = name;
-        this.mState = state;
-    }
-
-    public PlayInfo(String name, String singer){
+    public PlayInfo(String name, String singer ,long size){
         this.mName = name;
         this.mSinger = singer;
+        this.mSize = size;
     }
 
-    public PlayInfo(String name, String singer, boolean state){
-        this.mName = name;
-        this.mSinger = singer;
-        this.mState = state;
-    }
 
 
     /*
@@ -68,5 +59,9 @@ public class PlayInfo {
 
     public int getDuration(){
         return mDuration;
+    }
+
+    public long getSize(){
+        return mSize;
     }
 }

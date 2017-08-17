@@ -1,11 +1,11 @@
 package my.com;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.content.LocalBroadcastManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import my.com.action.BroadcastAction;
 import my.com.fragment.FriendFragment;
 import my.com.fragment.IndexFragment;
 import my.com.fragment.MyFragment;
@@ -29,29 +30,43 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     //  Fragment 碎片
     private FragmentManager mFragmentManager;
-    private Fragment indexfragment, myfragment, friendfragment, personfragment;
-    private String[] tabs = new String[]{"index", "my", "friend", "person"};        //  Fragment 标签
+    private Fragment indexfragment, myfragment, friendfragment, personfragment;     //  Fragment 对象
+    private String[] tabs = new String[]{"index", "my", "friend", "person"};           //  Fragment 标签
+
+    //  记录底部导航栏跳转的位置
+    int fPosition;
 
     //  重写“返回键”所需变量
     private long mExitTime;     //  用于计算双击“返回键”的间隔时长
 
-    int mPosition = 0;
+    //  本地广播管理器
+    private LocalBroadcastManager mLocalBroadcastManager;
 
 
     private static final String TAG = "MainActivity";         // 调试信息 TAG 标签
 
 
+    /*
+     *   ----- MainActivity : onCreate
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d(TAG, " ----- MainActivity : onCreate");
+        Log.i(TAG, " ----- MainActivity : onCreate");
 
         //  在 LogCat 打印对应 Activity 活动的类名
-        Log.d(TAG, "       Activity : " + getClass().getSimpleName());
+        Log.i(TAG, "       Activity : " + getClass().getSimpleName());
         //  在 ActivityCollector.activityList 添加 Activity ,方便管理
         ActivityCollector.addActivity(this);
+
+
+        //  实例化本地广播管理器，用途在重写返回键的位置
+        if(mLocalBroadcastManager == null) {
+            mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
+        }
 
 
         //  初始化页面，绑定控件
@@ -61,11 +76,11 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         navigation_index_iv.setSelected(true);
         navigation_index_tv.setSelected(true);
         showContent(0);     //  显示 Fragment
+        fPosition = 0;      //  记录位置
     }
 
     /*
-     *  初始化 MainActivity 的所有控件
-     *  设置对应的控件的点击事件
+     *  初始化 MainActivity 的控件，并设置对应的控件的点击事件
      */
     private void initView(){
         navigation_index_ll = (LinearLayout) findViewById(R.id.navigation_index_ll);
@@ -91,8 +106,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     }
 
     /*
-     *  重置底部导航栏的所有控件状态
-     *  使其显示为默认状态（灰色），
+     *  重置底部导航栏的控件状态（被选中）的函数
+     *
+     *  使其恢复默认状态（灰色）
      *  详细状态看 drawable - navigation_index_xxx.xml 文件
      */
     private void resetSelect(){
@@ -145,12 +161,12 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     }
 
     /*
-     *  用于显示 Fragment 的函数
-     *  显示第 to 个 Fragment 去 Framelayout
+     *  使用 FragmentManager 显示 Fragment 的函数
+     *  显示第 to 个 Fragment 去 <Framelayout>
      */
     private void showContent(int to){
         if(mFragmentManager == null){
-            //  实例化 FragmentManager
+            //  实例化 FragmentManager ，注意是：getSupportFragmentManager()
             mFragmentManager = this.getSupportFragmentManager();
         }
 
@@ -182,19 +198,18 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private void showFragment(FragmentTransaction fragmentTransaction, int to) {
         switch (to) {
             case 0:
-                mPosition = 0;
-                if (indexfragment == null){
-                    //  首次创建
+                fPosition = 0;
+                if (indexfragment == null){         //  首次创建
+
                     indexfragment = new IndexFragment();
                     fragmentTransaction.add(R.id.framelayout_main, indexfragment, tabs[to]);
-                }else {
-                    //  重新显示
+                }else {         //  重新显示
                     fragmentTransaction.show(indexfragment);
                 }
                 break;
 
             case 1:
-                mPosition = 1;
+                fPosition = 1;
                 if (myfragment == null){
                     myfragment = new MyFragment();
                     fragmentTransaction.add(R.id.framelayout_main, myfragment, tabs[to]);
@@ -204,7 +219,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 break;
 
             case 2:
-                mPosition = 2;
+                fPosition = 2;
                 if (friendfragment == null){
                     friendfragment = new FriendFragment();
                     fragmentTransaction.add(R.id.framelayout_main, friendfragment, tabs[to]);
@@ -214,7 +229,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 break;
 
             case 3:
-                mPosition = 3;
+                fPosition = 3;
                 if (personfragment == null){
                     personfragment = new PersonFragment();
                     fragmentTransaction.add(R.id.framelayout_main, personfragment, tabs[to]);
@@ -223,34 +238,37 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 }
                 break;
         }
+        //  把 Fragment 返回栈
 //        fragmentTransaction.addToBackStack(null);
         //  事务提交
         fragmentTransaction.commit();
     }
 
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, " ----- MainActivity : onDestroy");
-
-        // 在 ActivityCollector.activityList 移除 Activity
-        ActivityCollector.removeActivity(this);
-
-
-    }
-
     /*
-     *  重写返回键的方法
+     *  重写“返回键”的方法
      *  双击退出程序
      */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0){
-            if(mPosition != 1){
-                mExit();
-                return true;
+        if(keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0){        //  当按下返回键，并且不是长按
+            if(fPosition == 1){         //  如果 Fragment 页面是在“我的”那，则不使用双击退出程序
+                /*
+                 *  这里使用本地广播管理器 LocalBroadcastManager 发送本地广播，
+                 *  目的是为了使 MyFragment 里的 ChildFragment 能跳转
+                 *  当按下返回键时，使其发送内容为要跳转的 ChildFragment 的地址
+                 */
+                int jumpto = 0;     //  跳转地址
+                Intent intent = new Intent(BroadcastAction.MyFragmentAction);
+                intent.putExtra("jumpto", jumpto);
+                mLocalBroadcastManager.sendBroadcast(intent);
+                Log.i(TAG," -- MainActivity  onKeyDown() : mLocalBroadcastManager.sendBroadcast(intent)  " +
+                        "  Jump To :" + jumpto );
+
+            }else {
+                mExit();        //  开启双击退出
             }
+            return true;
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -266,5 +284,20 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             //  加了这个所有的 Activity 的 onDestroy() 都没执行
 //            System.exit(0);
         }
+    }
+
+
+    /*
+     *   ----- MainActivity : onDestroy
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, " ----- MainActivity : onDestroy");
+
+        // 在 ActivityCollector.activityList 移除 Activity
+        ActivityCollector.removeActivity(this);
+
+
     }
 }
