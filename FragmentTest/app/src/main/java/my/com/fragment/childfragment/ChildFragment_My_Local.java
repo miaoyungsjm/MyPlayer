@@ -37,8 +37,6 @@ public class ChildFragment_My_Local extends Fragment{
 
     private List<PlayInfo> mList;
 
-    private LocalBroadcastManager mLocalBroadcastManager;    //  本地广播管理
-
 
     private static final String TAG = "ChildFragment_My_Local";
 
@@ -49,10 +47,6 @@ public class ChildFragment_My_Local extends Fragment{
         Log.i(TAG, " ----- ChildFragment_My_Local : onCreateView()");
 
         root = inflater.inflate(R.layout.childfragment_my_loacl, null);
-
-        if(mLocalBroadcastManager == null){
-            mLocalBroadcastManager = LocalBroadcastManager.getInstance(getContext());
-        }
 
         initView(root);
 
@@ -111,7 +105,7 @@ public class ChildFragment_My_Local extends Fragment{
 
         my_local_recyclerview.setLayoutManager(layoutManager);
 
-        MyLocalRecyclerViewAdapter mMyLocalRecyclerViewAdapter = new MyLocalRecyclerViewAdapter(mList, mLocalBroadcastManager);
+        MyLocalRecyclerViewAdapter mMyLocalRecyclerViewAdapter = new MyLocalRecyclerViewAdapter(mList, getContext());
 
         my_local_recyclerview.setAdapter(mMyLocalRecyclerViewAdapter);
 

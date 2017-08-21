@@ -87,7 +87,7 @@ public class MyFragment extends Fragment {
 
         //  本地广播接收器的注册
         if(mLocalBroadcastManager == null) {
-            mLocalBroadcastManager = LocalBroadcastManager.getInstance(getContext());   //  实例化本地广播管理器
+            mLocalBroadcastManager = LocalBroadcastManager.getInstance(getActivity());   //  实例化本地广播管理器
             local_receiver_register();   //  注册/绑定
         }
 

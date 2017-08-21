@@ -49,10 +49,7 @@ public class PlayerActivity extends Activity {
     private int currentVolume, maxVolume;      //  获取系统当前音量，最大音量
     private SeekBar player_volume_seekbar;      //  音量拖动条
 
-    //  播放信息（歌名、歌手、最大/当前进度）部分
-    private boolean isFinish = false;     //  判断是否播完
-    private boolean isPlay = false;     //  判断是否在播放，更新进度条的判断
-    private boolean isLoop = false;     //  判断是否要循环播放
+    //  播放信息
     private String str_musicName;        //  歌名
     private String str_singer;        //  歌手
     private TextView title_player_musicName_tv;     //  歌名显示控件
@@ -61,6 +58,12 @@ public class PlayerActivity extends Activity {
     private String str_currentProgress, str_maxProgress;    //  int 转 str
     private TextView player_currentProgress_tv, player_maxProgress_tv;      //歌曲当前时间，结束时间
     private SeekBar player_progress_seekbar;        // 进度拖动条
+
+    //  播放状态
+    private int mPlayPosition;             //  播放位置
+    private boolean isFinish = false;
+    private boolean isPlay = false;     //  判断是否在播放，更新进度条的判断
+    private boolean isLoop = false;     //  判断是否要循环播放
 
     //  按钮
     private ImageView player_mplay_iv;          //  播放按钮
@@ -72,10 +75,8 @@ public class PlayerActivity extends Activity {
 
     //  列表
     private PopupWindow mPopupWindow;           //  PopupWindow
-    private List<PlayInfo> mPlayInfoList;       //  播放列表  List<PlayInfo>
+    private List<PlayInfo> mPlayList;       //  播放列表  List<PlayInfo>
     private PlayListArrayAdapter mPlaylistArrayAdapter;     //  适配器
-    private int mItemClickPosition;            //   ListView 点击位置
-    private int mItemLastPosition;             //   ListView 播放位置
 
     // 系统音量广播接收器（内部类对象）
     private VolumeChangeReceiver volumeChangeReceiver;
@@ -92,7 +93,7 @@ public class PlayerActivity extends Activity {
      *  PlayerService 服务绑定的实现部分
      *
      *  这里是通过绑定服务，调用服务接口函数，
-     *  来实现 Activity 和 Service 的“通信”（就是指挥服务执行什么）
+     *  来实现 Activity 和 Service 的“通信”（指挥服务的执行）
      *
      *  后面执行服务的绑定才回来看，先跳过
      *
@@ -233,8 +234,8 @@ public class PlayerActivity extends Activity {
 
 
             if(action.equals(BroadcastAction.PlayInfoProgressAction)) {
-                currentProgress = intent.getIntExtra("currentprogress", -1);
-                isFinish = intent.getBooleanExtra("isfinish", false);
+                currentProgress = intent.getIntExtra("currentprogress", 0);
+                isFinish = intent.getBooleanExtra("isFinish", false);
                 Log.d(TAG, " -- PlayInfoReceiver : onReceive()  PlayInfoProgressAction  " +
                         "  currentprogress = " + currentProgress +
                         "  isFinish = " + isFinish);
@@ -257,35 +258,16 @@ public class PlayerActivity extends Activity {
                     if (isLoop){
                         player_mplay_iv.setSelected(true);
                         isPlay = true;
-                    }else{
-                        if(mPlayInfoList.size() > 0){       //  当播放列表不为空时才可以选择下一首
-                            //  重置正在播放的歌曲的状态
-                            PlayInfo tPlayInfo = mPlayInfoList.get(PlayInfo.mPlayPosition);
-                            tPlayInfo.mState = false;
-
-                            //  把当前的播放的歌曲改为新切换的
-                            if(PlayInfo.mPlayPosition < mPlayInfoList.size() - 1 ){
-                                PlayInfo.mPlayPosition++ ;
-                            }else {
-                                PlayInfo.mPlayPosition = 0;
-                            }
-                            //  设置选中歌曲的状态
-                            tPlayInfo = mPlayInfoList.get(PlayInfo.mPlayPosition);
-                            tPlayInfo.mState = true;
-
-                            mPlaylistArrayAdapter.notifyDataSetChanged();
-
-                            //  切歌（使用重启服务的方法）
-                            mSkip(mPlayInfoList.get(PlayInfo.mPlayPosition).getPath(),
-                                    mPlayInfoList.get(PlayInfo.mPlayPosition).getName(),
-                                    mPlayInfoList.get(PlayInfo.mPlayPosition).getSinger());
-                        }
+                    }else {
+                        if(mPlaylistArrayAdapter != null)mPlaylistArrayAdapter.notifyDataSetChanged();
                     }
                 }
             }
 
         }
     }
+
+
     //  本地广播接收器的注册
     private void playinfo_local_receiver_register(){
         IntentFilter intentFilter = new IntentFilter();
@@ -359,41 +341,36 @@ public class PlayerActivity extends Activity {
     private void player(){
         Log.d(TAG, " -- player");
 
-        if(mPlayInfoList == null){
-
-            mPlayInfoList = new ArrayList<>();
-
-            //  扫描本地音乐，并添加到 mPlayInfoList
-            mPlayInfoList = MusicUtils.ScanLocalMusic(this);
-            Log.d(TAG, "  mPlayInfoList = MusicUtils.ScanLocalMusic(this)  扫描本地，获取列表");
+        if (mPlayList == null){
+            mPlayList = new ArrayList<>();
+        }else {
+            mPlayList.clear();
         }
 
-        //  把播放列表的第一首设置为选中状态
-        PlayInfo tPlayInfo = mPlayInfoList.get(PlayInfo.mPlayPosition);
-        tPlayInfo.mState = true;
+        mPlayList = MusicUtils.getPlayList();       //  读取播放列表
 
-        //  传入播放内容，其实只需一个 musicPath （音乐路径）就可以实现播放，
-        //  其他两项用于当 MediaPlayer 缓冲加载成功之后，再显示出播放的信息，而不是直接显示
+        if (mPlayList.size() <= 0){     //  如果原播放列表为空，则扫描本地音乐
+            mPlayList = MusicUtils.scanLocalMusic(this);
+            Log.d(TAG, "  mPlayList = MusicUtils.scanLocalMusic(this)  扫描本地，获取列表");
+        }
+
+
         Intent intent = new Intent(PlayerActivity.this, PlayerService.class);
-        intent.putExtra("musicpath", tPlayInfo.getPath());
-        intent.putExtra("musicname", tPlayInfo.getName());
-        intent.putExtra("singer", tPlayInfo.getSinger());
-
 
         //  启动服务 PlayerService
         startService(intent);
-        Log.d(TAG, "  startService(startIntent)");
+        Log.d(TAG, "  startService(intent)");
 
         // 绑定服务 PlayerService
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
-        Log.d(TAG, "  bindService(bindIntent, serviceConnection, BIND_AUTO_CREATE)");
+        Log.d(TAG, "  bindService(intent, serviceConnection, BIND_AUTO_CREATE)");
 
 //        // 解绑服务
 //        unbindService(serviceConnection);
 //
 //        // 关闭 PlayerService
-//        Intent stopIntent = new Intent(PlayerActivity.this, PlayerService.class);
-//        stopService(stopIntent);
+//        Intent intent = new Intent(PlayerActivity.this, PlayerService.class);
+//        stopService(intent);
 
         //  设置按钮的点击事件
         player_mplay_iv.setOnClickListener(mOnClickListener);
@@ -413,7 +390,6 @@ public class PlayerActivity extends Activity {
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            PlayInfo tPlayInfo;
             switch (v.getId())
             {
                 case R.id.player_mplay_iv:
@@ -430,51 +406,36 @@ public class PlayerActivity extends Activity {
 
 
                 case R.id.player_mnext_iv:
-                    if(mPlayInfoList.size() > 0){       //  当播放列表不为空时才可以选择下一首
-                        //  重置正在播放的歌曲的状态
-                        tPlayInfo = mPlayInfoList.get(PlayInfo.mPlayPosition);
-                        tPlayInfo.mState = false;
+                    player_mplay_iv.setSelected(false);
+                    isPlay = false;
 
-                        //  把当前的播放的歌曲改为新切换的
-                        if(PlayInfo.mPlayPosition < mPlayInfoList.size() - 1 ){
-                            PlayInfo.mPlayPosition++ ;
-                        }else {
-                            PlayInfo.mPlayPosition = 0;
-                        }
-                        //  设置选中歌曲的状态
-                        tPlayInfo = mPlayInfoList.get(PlayInfo.mPlayPosition);
-                        tPlayInfo.mState = true;
-
-//                        mPlaylistArrayAdapter.notifyDataSetChanged();
-
-                        //  切歌（使用重启服务的方法）
-                        mSkip(mPlayInfoList.get(PlayInfo.mPlayPosition).getPath(),
-                                mPlayInfoList.get(PlayInfo.mPlayPosition).getName(),
-                                mPlayInfoList.get(PlayInfo.mPlayPosition).getSinger());
+                    mPlayPosition = PlayInfo.getmPlayPosition();
+                    if(mPlayPosition < mPlayList.size()-1 ){
+                        mPlayPosition++;
+                    }else {
+                        mPlayPosition = 0;
                     }
+                    playerControlBinder.mSkip(mPlayPosition);
+
+                    player_mplay_iv.setSelected(true);
+                    isPlay = true;
                     break;
 
 
                 case R.id.player_mlast_iv:
-                    if(mPlayInfoList.size() > 0){       //  解释如上
-                        tPlayInfo = mPlayInfoList.get(PlayInfo.mPlayPosition);
-                        tPlayInfo.mState = false;
+                    player_mplay_iv.setSelected(false);
+                    isPlay = false;
 
-                        if(PlayInfo.mPlayPosition > 0){
-                            PlayInfo.mPlayPosition-- ;
-                        }else {
-                            PlayInfo.mPlayPosition = mPlayInfoList.size() - 1;
-                        }
-
-                        tPlayInfo = mPlayInfoList.get(PlayInfo.mPlayPosition);
-                        tPlayInfo.mState = true;
-
-//                        mPlaylistArrayAdapter.notifyDataSetChanged();
-
-                        mSkip(mPlayInfoList.get(PlayInfo.mPlayPosition).getPath(),
-                                mPlayInfoList.get(PlayInfo.mPlayPosition).getName(),
-                                mPlayInfoList.get(PlayInfo.mPlayPosition).getSinger());
+                    mPlayPosition = PlayInfo.getmPlayPosition();
+                    if(mPlayPosition > 0){
+                        mPlayPosition-- ;
+                    }else {
+                        mPlayPosition = mPlayList.size() - 1;
                     }
+                    playerControlBinder.mSkip(mPlayPosition);
+
+                    player_mplay_iv.setSelected(true);
+                    isPlay = true;
                     break;
 
 
@@ -508,40 +469,16 @@ public class PlayerActivity extends Activity {
                     Toast.makeText(PlayerActivity.this, "moveTaskToBack", Toast.LENGTH_LONG).show();
 
                     //  MainActivity 的启动模式被修改为 singleTop ，这里跳转有点不一样
-                    Intent goBack_Intent = new Intent(PlayerActivity.this, MainActivity.class);
-                    startActivity(goBack_Intent);       //  跳转至 MainActivity
+                    Intent intent = new Intent(PlayerActivity.this, MainActivity.class);
+                    startActivity(intent);       //  跳转至 MainActivity
                     overridePendingTransition(R.anim.alpha_in, R.anim.translate_right_out);       //  跳转动画
             }
         }
     };
-    /*
-     *  切歌函数
-     *  传入参数：路径、歌名、歌手
-     *  主要是路径或 url
-     */
-    public void mSkip(String path, String name, String singer){
-        //  重置进度条
-        player_progress_seekbar.setProgress(0);
-        player_currentProgress_tv.setText("00:00");
-        //  重置按钮状态
-        player_mplay_iv.setSelected(false);
-        isPlay = false;
-
-        //  重启服务
-        Intent intent = new Intent(PlayerActivity.this, PlayerService.class);
-        intent.putExtra("musicpath", path);      //  传入播放路径（主要）
-        intent.putExtra("musicname", name);
-        intent.putExtra("singer", singer);
-        startService(intent);           //  启动服务 PlayerService
-
-        player_mplay_iv.setSelected(true);
-        isPlay = true;
-    }
 
 
     /*
      *  初始化 PopupWindow
-     *
      */
     private void showPopupWindow(){
 
@@ -558,8 +495,8 @@ public class PlayerActivity extends Activity {
         mPopupWindow.setContentView(contentView);
 
 
-        //  初始化 ListView : playlist_listView
-        init_playlist_listView(contentView);
+        //  初始化 ListView
+        init_ListView(contentView);
 
 
         //  外部可点击，即点击 PopupWindow 以外的区域，PopupWindow 消失
@@ -571,9 +508,10 @@ public class PlayerActivity extends Activity {
         playlist_clear_ll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mPlayInfoList != null && mPlaylistArrayAdapter != null){
-                    mPlayInfoList.removeAll(mPlayInfoList);
+                if(mPlayList != null && mPlaylistArrayAdapter != null){
+                    mPlayList.clear();
                     mPlaylistArrayAdapter.notifyDataSetChanged();
+                    MusicUtils.updatePlayList(mPlayList);
                 }
             }
         });
@@ -623,28 +561,16 @@ public class PlayerActivity extends Activity {
 //        mPopupWindow.dismiss();
 
     }
-    /*
-     *  初始化播放列表
-     *
-     */
-    private void init_playlist_listView(View v){
+
+    private void init_ListView(View v){
 
         ListView playlist_listView = (ListView) v.findViewById(R.id.playlist_listView);
 
-        if(mPlayInfoList == null){      //  如果为空，重新扫描（防怀孕）
-            mPlayInfoList = new ArrayList<>();
-
-            //  扫描本地音乐，并添加到 mPlayInfoList
-            mPlayInfoList = MusicUtils.ScanLocalMusic(this);
-
-        }
-
         //  初始化 PlayListArrayAdapter 适配器
         if(mPlaylistArrayAdapter == null){
-
-            //  实例化适配器，传入自定义 item 布局 和 mPlayInfoList
+            //  实例化适配器，传入自定义 item 布局 和 mPlayList
             mPlaylistArrayAdapter = new PlayListArrayAdapter(PlayerActivity.this,
-                    R.layout.popupwindow_item_playinfo, mPlayInfoList);
+                    R.layout.popupwindow_item_playinfo, mPlayList);
 
             //  使用默认布局的适配器
 //            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(PlayerActivity.this,
@@ -659,46 +585,17 @@ public class PlayerActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                mItemClickPosition = position;
-                mItemLastPosition = PlayInfo.mPlayPosition;        //  获取 PlayInfo 静态变量 mPlayPosition
+                player_mplay_iv.setSelected(false);
+                isPlay = false;
 
-                PlayInfo next_playInfo = mPlayInfoList.get(mItemClickPosition);
-                Toast.makeText(PlayerActivity.this, next_playInfo.getName(), Toast.LENGTH_SHORT).show();
+                PlayInfo playInfo = mPlayList.get(position);
+                Toast.makeText(PlayerActivity.this, playInfo.getName(), Toast.LENGTH_SHORT).show();
 
-                /*
-                 *  ！！！修复修复 ListView All BUG ！！！
-                 *
-                    TextView tv = (TextView) view.findViewById(R.id.playinfo_name_tv);
-                    tv.setText("Change item");
-                    tv.setTextColor(getResources().getColor(R.color.colorAccent));
-
-                 *  因为 mPlaylistArrayAdapter.notifyDataSetChanged() 或者滚动都会重新调用 getView()
-                 *  TextView.setText 就算改变文本，重新加载也没了
-                 *  解决：直接改 playInfo 对象数据  -  playInfo.mName = "";
-                 *
-                 *  TextView.setColor 能改变颜色，但不能保留，而且颜色在滚动会错位
-                 *  解决：直接改 playInfo 对象数据  -  playInfo.mState = "" ，适配器再根据 playInfo.mState 的值做颜色修改
-                 *
-                 */
-
-                //  修改内容
-//                next_playInfo.mName = "Change item";
-
-                //  重置上一个对象的选中状态
-                PlayInfo last_playInfo = mPlayInfoList.get(mItemLastPosition);
-                last_playInfo.mState = false;
-
-                //  设置当前选中对象的状态
-                next_playInfo.mState = true;     //  状态设为被选择，通过适配器 mPlaylistArrayAdapter 判断该值来改变背景颜色
-                PlayInfo.mPlayPosition = mItemClickPosition;     //  更新选中位置
+                //  切歌
+                playerControlBinder.mSkip(position);
 
                 //  刷新适配器
                 mPlaylistArrayAdapter.notifyDataSetChanged();
-
-                //  切歌，重启服务
-                mSkip(mPlayInfoList.get(PlayInfo.mPlayPosition).getPath(),
-                        mPlayInfoList.get(PlayInfo.mPlayPosition).getName(),
-                        mPlayInfoList.get(PlayInfo.mPlayPosition).getSinger());
 
                 //  按钮状态更新
                 player_mplay_iv.setSelected(true);
@@ -706,27 +603,6 @@ public class PlayerActivity extends Activity {
             }
         });
     }
-    /*
-     *  如需继续提高 ListView 的更新效率，请开始你的表演
-     *
-     *  更新 ListView 的一个 item
-     *  调用一次 getView() 方法
-     *
-     */
-//    private void updateItem(ListView listView, int position, PlayListArrayAdapter adapter) {
-//        /**第一个可见的位置**/
-//        int firstVisiblePosition = listView.getFirstVisiblePosition();
-//        /**最后一个可见的位置**/
-//        int lastVisiblePosition = listView.getLastVisiblePosition();
-//
-//        /**在看见范围内才更新，不可见的滑动后自动会调用getView方法更新**/
-//        if (position >= firstVisiblePosition && position <= lastVisiblePosition) {
-//            /**获取指定位置view对象**/
-//            View view = listView.getChildAt(position - firstVisiblePosition);
-//            adapter.getView(position, view, listView);
-//        }
-//    }
-
 
 
     /*

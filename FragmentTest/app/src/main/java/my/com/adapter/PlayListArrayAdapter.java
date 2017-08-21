@@ -16,9 +16,11 @@ import java.util.List;
 
 import my.com.model.PlayInfo;
 import my.com.R;
+import my.com.utils.MusicUtils;
 
 /**
  * Created by MY on 2017/8/11.
+ *
  */
 
 public class PlayListArrayAdapter extends ArrayAdapter<PlayInfo>{
@@ -57,7 +59,7 @@ public class PlayListArrayAdapter extends ArrayAdapter<PlayInfo>{
     @Override
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        Log.d(TAG, " ----- PlayListArrayAdapter : getView()");
+        Log.d(TAG, " ----- PlayListArrayAdapter : getView()  " + position+ "  " + convertView);
 
         //  获取当前的 PlayInfo 实例（有点疑问）？？？
         PlayInfo playInfo = getItem(position);
@@ -98,9 +100,12 @@ public class PlayListArrayAdapter extends ArrayAdapter<PlayInfo>{
             @Override
             public void onClick(View v) {
                 Log.d(TAG, " -------------------------------------- Delete position : " + position);
-                if(position <= PlayInfo.mPlayPosition)PlayInfo.mPlayPosition--;      //  更新对应的播放位置
+
+                int mPlayPosition = PlayInfo.getmPlayPosition();
+                if(position <= mPlayPosition)PlayInfo.setmPlayPosition(mPlayPosition-1);      //  更新对应的播放位置
                 mList.remove(position);
                 notifyDataSetChanged();     //  更新适配器
+                MusicUtils.updatePlayList(mList);       //  更新 MusicUtils 类播放列表
             }
         });
 

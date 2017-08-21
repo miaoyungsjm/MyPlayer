@@ -1,5 +1,6 @@
 package my.com.adapter;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,7 +27,9 @@ public class MyMainRecyclerViewAdapter extends RecyclerView.Adapter<MyMainRecycl
 
     private List<MyMain> mlist;
 
-    private LocalBroadcastManager mLocalBroadcastManager;    //  本地广播管理
+    private Context mContext;
+
+    private LocalBroadcastManager mLocalBroadcastManager;
 
 
     private static final String TAG = "RecyclerViewAdapter";         //  调试信息 TAG 标签
@@ -52,9 +55,9 @@ public class MyMainRecyclerViewAdapter extends RecyclerView.Adapter<MyMainRecycl
     /*
      *  构造函数
      */
-    public MyMainRecyclerViewAdapter(List<MyMain> list, LocalBroadcastManager localBroadcastManager) {
+    public MyMainRecyclerViewAdapter(List<MyMain> list, Context context) {
         mlist = list;
-        mLocalBroadcastManager = localBroadcastManager;
+        mContext = context;
     }
 
     @Override
@@ -75,6 +78,10 @@ public class MyMainRecyclerViewAdapter extends RecyclerView.Adapter<MyMainRecycl
                 Intent intent = new Intent(BroadcastAction.MyFragmentAction);
                 intent.putExtra("jumpto", jumpto);
 
+
+                if(mLocalBroadcastManager == null) {
+                    mLocalBroadcastManager = LocalBroadcastManager.getInstance(mContext);
+                }
                 mLocalBroadcastManager.sendBroadcast(intent);
                 Log.i(TAG, " -- MyMainRecyclerViewAdapter : mLocalBroadcastManager.sendBroadcast(intent)  " +
                         "  Jump To :" + jumpto );

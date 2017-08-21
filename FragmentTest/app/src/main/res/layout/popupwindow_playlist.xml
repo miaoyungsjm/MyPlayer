@@ -106,7 +106,10 @@
     <ListView
         android:id="@+id/playlist_listView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:divider="@color/colorTransparent"
+        android:dividerHeight="0px"
+        android:scrollbars="vertical">
 
     </ListView>
 

@@ -1,5 +1,6 @@
 package my.com.adapter;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,6 +26,8 @@ import my.com.model.PlayInfo;
 public class MyLocalRecyclerViewAdapter extends RecyclerView.Adapter<MyLocalRecyclerViewAdapter.ViewHolder>{
 
     private List<PlayInfo> mlist;
+
+    private Context mContext;
 
     private LocalBroadcastManager mLocalBroadcastManager;    //  本地广播管理
 
@@ -52,9 +55,9 @@ public class MyLocalRecyclerViewAdapter extends RecyclerView.Adapter<MyLocalRecy
     /*
      *  构造函数
      */
-    public MyLocalRecyclerViewAdapter(List<PlayInfo> list, LocalBroadcastManager localBroadcastManager) {
+    public MyLocalRecyclerViewAdapter(List<PlayInfo> list, Context context) {
         mlist = list;
-        mLocalBroadcastManager = localBroadcastManager;
+        mContext = context;
     }
 
     @Override
@@ -75,6 +78,10 @@ public class MyLocalRecyclerViewAdapter extends RecyclerView.Adapter<MyLocalRecy
 //                Intent intent = new Intent(BroadcastAction.MyFragmentAction);
 //                intent.putExtra("jumpto", jumpto);
 //
+//
+//                if(mLocalBroadcastManager == null){
+//                    mLocalBroadcastManager = LocalBroadcastManager.getInstance(mContext);
+//                }
 //                mLocalBroadcastManager.sendBroadcast(intent);
 //                Log.i(TAG, " -- MyMainRecyclerViewAdapter : mLocalBroadcastManager.sendBroadcast(intent)  " +
 //                        "  Jump To :" + jumpto );

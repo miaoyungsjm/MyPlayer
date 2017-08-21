@@ -11,17 +11,24 @@ import my.com.model.PlayInfo;
 
 /**
  * Created by MY on 2017/8/14.
+ * 音乐工具类
+ * 功能：
+ * 1）记录、更新播放列表
+ * 2）扫描本地音频
  */
 
-public class MusicUtils {       //  音乐工具类
+public class MusicUtils {
+
+    //  静态变量 mPlayList ，播放列表
+    private static List<PlayInfo> mPlayList = new ArrayList<>();
+
 
     /*
      *  扫描本地音频文件，并返回 List<PlayInfo>
-     *
      */
-    public static List<PlayInfo> ScanLocalMusic(Context context){
+    public static List<PlayInfo> scanLocalMusic(Context context){
 
-        List<PlayInfo> mPlayInfoList = new ArrayList<>();
+//        List<PlayInfo> mPlayList = new ArrayList<>();
 
         Cursor cursor = context.getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -49,14 +56,32 @@ public class MusicUtils {       //  音乐工具类
                         playInfo.mSinger = str[0];
                         playInfo.mName = str[1];
                     }
-                    mPlayInfoList.add(playInfo);
+                    mPlayList.add(playInfo);
                 }
             }
             // 释放资源
             cursor.close();
         }
 
-        return mPlayInfoList;
+        return mPlayList;
+    }
+
+
+    /*
+     *  获取播放列表
+     */
+    public static List<PlayInfo> getPlayList(){
+        return mPlayList;
+    }
+
+    /*
+     *  更新播放列表
+     */
+    public static List<PlayInfo> updatePlayList(List<PlayInfo> list){
+
+        mPlayList = list;
+
+        return mPlayList;
     }
 
 }

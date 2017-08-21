@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -32,19 +31,14 @@ public class ChildFragment_My_Favourite extends Fragment{
     ImageView my_favourite_playing_iv;
 
 
-    private List<MyMain> mMenuList = new ArrayList<>();
+    private List<MyMain> mMyMainList = new ArrayList<>();
 
-    private LocalBroadcastManager mLocalBroadcastManager;    //  本地广播管理
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         root = inflater.inflate(R.layout.childfragment_my_favourite, null);
-
-        if(mLocalBroadcastManager == null){
-            mLocalBroadcastManager = LocalBroadcastManager.getInstance(getContext());
-        }
 
         initView(root);
 
@@ -70,25 +64,25 @@ public class ChildFragment_My_Favourite extends Fragment{
         //  添加测试数据
         for (int i = 0; i < 2 ; i++){
             MyMain Apple = new MyMain(R.mipmap.ic_launcher, "Apple", 0);
-            mMenuList.add(Apple);
+            mMyMainList.add(Apple);
             MyMain Banana = new MyMain(R.mipmap.ic_launcher, "Banana", 0);
-            mMenuList.add(Banana);
+            mMyMainList.add(Banana);
             MyMain Orange = new MyMain(R.mipmap.ic_launcher, "Orange", 0);
-            mMenuList.add(Orange);
+            mMyMainList.add(Orange);
             MyMain Watermelon = new MyMain(R.mipmap.ic_launcher, "Watermelon", 0);
-            mMenuList.add(Watermelon);
+            mMyMainList.add(Watermelon);
             MyMain Pear = new MyMain(R.mipmap.ic_launcher, "Pear", 0);
-            mMenuList.add(Pear);
+            mMyMainList.add(Pear);
             MyMain Grape = new MyMain(R.mipmap.ic_launcher, "Grape", 0);
-            mMenuList.add(Grape);
+            mMyMainList.add(Grape);
             MyMain Pineapple = new MyMain(R.mipmap.ic_launcher, "Pineapple", 0);
-            mMenuList.add(Pineapple);
+            mMyMainList.add(Pineapple);
             MyMain Strawberry = new MyMain(R.mipmap.ic_launcher, "Strawberry", 0);
-            mMenuList.add(Strawberry);
+            mMyMainList.add(Strawberry);
             MyMain Cherry = new MyMain(R.mipmap.ic_launcher, "Cherry", 0);
-            mMenuList.add(Cherry);
+            mMyMainList.add(Cherry);
             MyMain Mango = new MyMain(R.mipmap.ic_launcher, "Mango", 0);
-            mMenuList.add(Mango);
+            mMyMainList.add(Mango);
         }
 
 
@@ -99,7 +93,7 @@ public class ChildFragment_My_Favourite extends Fragment{
 
         recyclerView.setLayoutManager(layoutManager);
 
-        MyMainRecyclerViewAdapter mMyMainRecyclerViewAdapter = new MyMainRecyclerViewAdapter(mMenuList, mLocalBroadcastManager);
+        MyMainRecyclerViewAdapter mMyMainRecyclerViewAdapter = new MyMainRecyclerViewAdapter(mMyMainList, getContext());
 
         recyclerView.setAdapter(mMyMainRecyclerViewAdapter);
 

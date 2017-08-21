@@ -2,16 +2,16 @@ package my.com.model;
 
 /**
  * Created by MY on 2017/8/11.
+ *
  */
 
 public class PlayInfo {
 
-    public static int mPlayPosition = 0 ;
+    private static int mPlayPosition = 0 ;
 
     public String mName;
     public String mSinger;
     public int mDuration;
-
     public String mPath;
     public long mSize;
 
@@ -19,7 +19,6 @@ public class PlayInfo {
 
     /*
      *  构造函数
-     *
      */
     public PlayInfo() {
         super();
@@ -36,31 +35,29 @@ public class PlayInfo {
     }
 
 
+    public static void setmPlayPosition(int p){
+        mPlayPosition = p;
+    }
+    public static int getmPlayPosition(){
+        return mPlayPosition;
+    }
 
-    /*
-     *  方法
-     */
 
     public String getPath(){
         return mPath;
     }
-
     public String getName(){
         return mName;
     }
-
     public String getSinger(){
         return mSinger;
     }
-
     public boolean getState(){
         return mState;
     }
-
     public int getDuration(){
         return mDuration;
     }
-
     public long getSize(){
         return mSize;
     }

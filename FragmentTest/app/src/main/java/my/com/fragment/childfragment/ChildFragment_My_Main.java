@@ -30,8 +30,6 @@ public class ChildFragment_My_Main extends Fragment{
 
     View root;
 
-    private LocalBroadcastManager mLocalBroadcastManager;    //  本地广播管理
-
     ImageView my_main_playing_iv;       //  ImageView
     RecyclerView my_main_recyclerview;      //  RecyclerView
 
@@ -48,9 +46,6 @@ public class ChildFragment_My_Main extends Fragment{
 
         root = inflater.inflate(R.layout.childfragment_my_main, null);
 
-        if(mLocalBroadcastManager == null) {
-            mLocalBroadcastManager = LocalBroadcastManager.getInstance(getContext());
-        }
 
         initView(root);
 
@@ -86,12 +81,12 @@ public class ChildFragment_My_Main extends Fragment{
 
 //        RecyclerView my_local_recyclerview = (RecyclerView) v.findViewById(R.id.my_local_recyclerview);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());      //  getContext()？？？
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
         my_main_recyclerview.setLayoutManager(layoutManager);
 
-        MyMainRecyclerViewAdapter mMyMainRecyclerViewAdapter = new MyMainRecyclerViewAdapter(mMyMainList, mLocalBroadcastManager);
+        MyMainRecyclerViewAdapter mMyMainRecyclerViewAdapter = new MyMainRecyclerViewAdapter(mMyMainList, getContext());
 
         my_main_recyclerview.setAdapter(mMyMainRecyclerViewAdapter);
 
