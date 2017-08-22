@@ -7,8 +7,6 @@ package my.com.model;
 
 public class PlayInfo {
 
-    private static int mPlayPosition = 0 ;
-
     public String mName;
     public String mSinger;
     public int mDuration;
@@ -33,15 +31,6 @@ public class PlayInfo {
         this.mSinger = singer;
         this.mSize = size;
     }
-
-
-    public static void setmPlayPosition(int p){
-        mPlayPosition = p;
-    }
-    public static int getmPlayPosition(){
-        return mPlayPosition;
-    }
-
 
     public String getPath(){
         return mPath;

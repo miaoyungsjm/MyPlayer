@@ -101,8 +101,8 @@ public class PlayListArrayAdapter extends ArrayAdapter<PlayInfo>{
             public void onClick(View v) {
                 Log.d(TAG, " -------------------------------------- Delete position : " + position);
 
-                int mPlayPosition = PlayInfo.getmPlayPosition();
-                if(position <= mPlayPosition)PlayInfo.setmPlayPosition(mPlayPosition-1);      //  更新对应的播放位置
+                int mPlayPosition = MusicUtils.getPlayPosition();
+                if(position <= mPlayPosition)MusicUtils.setPlayPosition(mPlayPosition-1);      //  更新对应的播放位置
                 mList.remove(position);
                 notifyDataSetChanged();     //  更新适配器
                 MusicUtils.updatePlayList(mList);       //  更新 MusicUtils 类播放列表

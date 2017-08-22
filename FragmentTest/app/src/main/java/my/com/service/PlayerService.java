@@ -79,37 +79,36 @@ public class PlayerService extends Service{
     public class PlayerControlBinder extends Binder{
 
         public void mPlay(){
-            Log.d(TAG, " -- PlayerControlBinder : mPlay");
+            Log.d(TAG, " -- PlayerControlBinder : mPlay()");
             mMediaPlayer.start();
         }
         public void mPause(){
-            Log.d(TAG, " -- PlayerControlBinder : mPause");
+            Log.d(TAG, " -- PlayerControlBinder : mPause()");
             if(mMediaPlayer.isPlaying())mMediaPlayer.pause();
         }
         public void mSeekTo(int msec){
-            Log.d(TAG, " -- PlayerControlBinder : mSeekTo");
+            Log.d(TAG, " -- PlayerControlBinder : mSeekTo()");
             mMediaPlayer.seekTo(msec);
         }
         public void mSkip(int position){
-            Log.d(TAG, " -- PlayerControlBinder : mSkip");
+            Log.d(TAG, " -- PlayerControlBinder : mSkip()");
 
             PlayInfo tPlayInfo;;
 
-            mPlayList = MusicUtils.getPlayList();
+            mPlayList = MusicUtils.getPlayList();//  重新获取播放列表
 
-            if(mPlayList.size() > 0) {
+            if(mPlayList.size() > 0) { //  当播放列表不为空时才可以选择下一首播放
 
-                mPlayPosition = PlayInfo.getmPlayPosition();
+                mPlayPosition = MusicUtils.getPlayPosition();//  获取前播放位置
 
-                if (mPlayPosition >= 0 ){    //  当第一首被删除，mPlayPosition 为负数，无法找到对象
+                if (mPlayPosition >= 0 ){//  重置前播放状态
                     tPlayInfo = mPlayList.get(mPlayPosition);
                     tPlayInfo.mState = false;
                 }
 
-                mPlayPosition = position;
-                PlayInfo.setmPlayPosition(mPlayPosition);
+                mPlayPosition = position;//  设置新播放位置
+                MusicUtils.setPlayPosition(mPlayPosition);
 
-                //  设置选中歌曲的状态
                 tPlayInfo = mPlayList.get(mPlayPosition);
                 tPlayInfo.mState = true;
 
@@ -117,19 +116,19 @@ public class PlayerService extends Service{
                 musicName = tPlayInfo.getName();
                 singer = tPlayInfo.getSinger();
 
-                if (musicPath != null)init_MediaPlayer();           // 初始化多媒体播放器
+                if (musicPath != null)init_MediaPlayer();// 初始化多媒体播放器
             }else {
-                Log.d(TAG, "    mPlayList is null");
+                Log.d(TAG, "  mPlayList is null");
             }
         }
         public void mToLoop(boolean isLoop){
-            Log.d(TAG, " -- PlayerControlBinder : mToLoop");
+            Log.d(TAG, " -- PlayerControlBinder : mToLoop()");
             if(isLoop){            // 设置是否单曲循环
                 mMediaPlayer.setLooping(true);
-                Log.d(TAG, "    setLooping(true)");
+                Log.d(TAG, "  setLooping(true)");
             }else {
                 mMediaPlayer.setLooping(false);
-                Log.d(TAG, "    setLooping(false)");
+                Log.d(TAG, "  setLooping(false)");
             }
         }
     }
@@ -238,20 +237,21 @@ public class PlayerService extends Service{
     public int onStartCommand(final Intent intent, int flags, int startId) {
         Log.i(TAG, " ----- PlayerService : onStartCommand");
 
+        //  实例化 / 重置 播放列表
         if (mPlayList == null){
             mPlayList = new ArrayList<>();
         }else {
             mPlayList.clear();
         }
 
-        mPlayList = MusicUtils.getPlayList();       //  读取播放列表
+        mPlayList = MusicUtils.getPlayList();//  获取列表
 
-        if (mPlayList.size() <= 0){     //  如果播放列表为空，则扫描本地音乐
+        if (mPlayList.size() <= 0){//  如果播放列表为空，则扫描本地音乐
             mPlayList = MusicUtils.scanLocalMusic(this);
-            Log.d(TAG, "  mPlayList = MusicUtils.scanLocalMusic(this)  扫描本地，获取列表");
+            Log.d(TAG, "  mPlayList = MusicUtils.scanLocalMusic(this)  获取本地列表");
         }
 
-        PlayInfo tPlayInfo = mPlayList.get(PlayInfo.getmPlayPosition());
+        PlayInfo tPlayInfo = mPlayList.get(MusicUtils.getPlayPosition());
         tPlayInfo.mState = true;
 
         musicPath = tPlayInfo.getPath();
@@ -334,42 +334,57 @@ public class PlayerService extends Service{
                         intent.putExtra("currentprogress", 0);
                         intent.putExtra("isFinish", true);
                         mLocalBroadcastManager.sendBroadcast(intent);
-                        Log.d(TAG,"  mLocalBroadcastManager.sendBroadcast(intent)  PlayInfoProgressAction  " +
-                                "  isFinish = true");
+                        Log.d(TAG,"  mLocalBroadcastManager.sendBroadcast(intent)\n"+
+                                "    PlayInfoProgressAction :" +
+                                "    isFinish = true");
 
+                        //  如果不是单曲循环，切歌
+                        if(!mMediaPlayer.isLooping()){
 
-                        mPlayList = MusicUtils.getPlayList();
+                            PlayInfo tPlayInfo;
 
-                        //  当播放列表不为空时才可以选择下一首播放
-                        if(mPlayList.size() > 0) {
+                            //  重新获取播放列表
+                            mPlayList = MusicUtils.getPlayList();
 
-                            mPlayPosition = PlayInfo.getmPlayPosition();
+                            //  当播放列表不为空时才可以选择下一首播放
+                            if(mPlayList.size() > 0) {
 
-                            //  重置正在播放的歌曲的状态
-                            PlayInfo tPlayInfo = mPlayList.get(mPlayPosition);
-                            tPlayInfo.mState = false;
+                                //  获取前播放位置
+                                mPlayPosition = MusicUtils.getPlayPosition();
 
-                            //  把当前的播放的歌曲改为新切换的
-                            if (mPlayPosition < mPlayList.size() - 1) {
-                                mPlayPosition++;
-                            } else {
-                                mPlayPosition = 0;
+                                //  重置前播放状态
+                                if (mPlayPosition >= 0 ){    //  当第一首被删除，mPlayPosition 为负数，无法找到对象
+                                    tPlayInfo = mPlayList.get(mPlayPosition);
+                                    tPlayInfo.mState = false;
+                                }
+
+                                //  设置新播放位置
+                                if (mPlayPosition < mPlayList.size() - 1) {
+                                    mPlayPosition++;
+                                } else {
+                                    mPlayPosition = 0;
+                                }
+                                //  更新播放位置
+                                MusicUtils.setPlayPosition(mPlayPosition);
+
+                                //  更新播放状态
+                                tPlayInfo = mPlayList.get(mPlayPosition);
+                                tPlayInfo.mState = true;
+
+                                musicPath = tPlayInfo.getPath();
+                                musicName = tPlayInfo.getName();
+                                singer = tPlayInfo.getSinger();
+
+                                if (musicPath != null)init_MediaPlayer();// 初始化多媒体播放器
+
+                            }else {
+                                Log.d(TAG, "  mPlayList is null");
                             }
-                            PlayInfo.setmPlayPosition(mPlayPosition);
-
-                            //  设置选中歌曲的状态
-                            tPlayInfo = mPlayList.get(mPlayPosition);
-                            tPlayInfo.mState = true;
-
-                            musicPath = tPlayInfo.getPath();
-                            musicName = tPlayInfo.getName();
-                            singer = tPlayInfo.getSinger();
-
-                            if (musicPath != null)init_MediaPlayer();           // 初始化多媒体播放器
-
                         }else {
-                            Log.d(TAG, "    mPlayList is null");
+                            Log.d(TAG, "  mMediaPlayer.isLooping()");
                         }
+
+
                     }
                 });
 

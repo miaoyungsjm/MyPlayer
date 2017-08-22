@@ -19,17 +19,39 @@ import my.com.model.PlayInfo;
 
 public class MusicUtils {
 
-    //  静态变量 mPlayList ，播放列表
+    //  静态变量 - 播放列表、播放位置
     private static List<PlayInfo> mPlayList = new ArrayList<>();
+    private static int mPlayPosition = 0 ;
 
 
-    /*
-     *  扫描本地音频文件，并返回 List<PlayInfo>
-     */
-    public static List<PlayInfo> scanLocalMusic(Context context){
-
+    //  构造函数
+    public MusicUtils() {
+        super();
 //        List<PlayInfo> mPlayList = new ArrayList<>();
+    }
 
+
+    //  获取、设置播放列表
+    public static List<PlayInfo> getPlayList(){
+        return mPlayList;
+    }
+    public static List<PlayInfo> updatePlayList(List<PlayInfo> list){
+        mPlayList = list;
+        return null;
+    }
+
+
+    //  获取、设置播放位置
+    public static void setPlayPosition(int p){
+        mPlayPosition = p;
+    }
+    public static int getPlayPosition(){
+        return mPlayPosition;
+    }
+
+
+    //  扫描本地音频文件，并返回 List<PlayInfo>
+    public static List<PlayInfo> scanLocalMusic(Context context){
         Cursor cursor = context.getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 null, null, null,
@@ -65,23 +87,4 @@ public class MusicUtils {
 
         return mPlayList;
     }
-
-
-    /*
-     *  获取播放列表
-     */
-    public static List<PlayInfo> getPlayList(){
-        return mPlayList;
-    }
-
-    /*
-     *  更新播放列表
-     */
-    public static List<PlayInfo> updatePlayList(List<PlayInfo> list){
-
-        mPlayList = list;
-
-        return mPlayList;
-    }
-
 }
