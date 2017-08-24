@@ -119,6 +119,20 @@ public class PlayerService extends Service{
                 singer = tPlayInfo.getSinger();
 
                 if (musicPath != null)init_MediaPlayer();// 初始化多媒体播放器
+
+                // 发送本地广播，更新 PlayerActivity 当前播放位置
+                Intent intent = new Intent(BroadcastAction.PlayInfoProgressAction);
+                intent.putExtra("currentprogress", 0);
+                intent.putExtra("isChange", true);
+                intent.putExtra("isFinish", true);
+                intent.putExtra("musicname", musicName);
+                mLocalBroadcastManager.sendBroadcast(intent);
+                Log.d(TAG,"  mLocalBroadcastManager.sendBroadcast(intent)\n"+
+                        "    PlayInfoProgressAction :" +
+                        "    currentprogress = 0" +
+                        "    isChange = true" +
+                        "    isFinish = true");
+
             }else {
                 Log.d(TAG, "  mPlayList.size() == 0");
             }
@@ -337,15 +351,6 @@ public class PlayerService extends Service{
 //                        stopSelf();
 //                        Log.d(TAG,"  stopSelf()  关闭服务");
 
-                        // 发送本地广播，更新 PlayerActivity 当前播放位置
-                        Intent intent = new Intent(BroadcastAction.PlayInfoProgressAction);
-                        intent.putExtra("currentprogress", 0);
-                        intent.putExtra("isFinish", true);
-                        mLocalBroadcastManager.sendBroadcast(intent);
-                        Log.d(TAG,"  mLocalBroadcastManager.sendBroadcast(intent)\n"+
-                                "    PlayInfoProgressAction :" +
-                                "    isFinish = true");
-
                         //  如果不是单曲循环，切歌
                         if(!mMediaPlayer.isLooping()){
 
@@ -385,8 +390,22 @@ public class PlayerService extends Service{
 
                                 if (musicPath != null)init_MediaPlayer();// 初始化多媒体播放器
 
+                                // 发送本地广播，更新 PlayerActivity 当前播放位置
+                                Intent intent = new Intent(BroadcastAction.PlayInfoProgressAction);
+                                intent.putExtra("currentprogress", 0);
+                                intent.putExtra("isChange", true);
+                                intent.putExtra("isFinish", true);
+                                intent.putExtra("musicname", musicName);
+                                mLocalBroadcastManager.sendBroadcast(intent);
+                                Log.d(TAG,"  mLocalBroadcastManager.sendBroadcast(intent)\n"+
+                                        "    PlayInfoProgressAction :" +
+                                        "    currentprogress = 0" +
+                                        "    isChange = true" +
+                                        "    isFinish = true" +
+                                        "    musicname = musicName");
+
                             }else {
-                                Log.d(TAG, "  mPlayList is null");
+                                Log.d(TAG, "  mPlayList.size() == 0");
                             }
                         }else {
                             Log.d(TAG, "  mMediaPlayer.isLooping()");

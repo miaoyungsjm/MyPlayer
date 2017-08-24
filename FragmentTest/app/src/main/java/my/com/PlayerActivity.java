@@ -62,6 +62,7 @@ public class PlayerActivity extends Activity {
     private int mPlayPosition;             //  播放位置
     private boolean isPlay = false;     //  判断是否在播放，更新进度条的判断
     private boolean isLoop = false;     //  判断是否要循环播放
+    private boolean isChange = false;
     private boolean isFinish = false;
     private boolean onTrackingTouch = false;
 
@@ -231,17 +232,17 @@ public class PlayerActivity extends Activity {
 
             if(action.equals(BroadcastAction.PlayInfoProgressAction)) {
                 currentProgress = intent.getIntExtra("currentprogress", 0);
+                isChange = intent.getBooleanExtra("isChange", false);
                 isFinish = intent.getBooleanExtra("isFinish", false);
                 Log.d(TAG, "    PlayInfoProgressAction :" +
                         "    currentprogress = " + currentProgress +
+                        "    isChange = " + isChange +
                         "    isFinish = " + isFinish);
 
                 if(isFinish){  //   当收到服务发来的 isFinish == true
                     isPlay = false;
                     player_mplay_iv.setSelected(false);     //  重置按钮
 
-                    //  更新 popupwindow 的适配器，即播放列表显示内容
-                    if(mPlaylistArrayAdapter != null)mPlaylistArrayAdapter.notifyDataSetChanged();
                 } else { //  isFinish == false
                     isPlay = true;
                     if (onTrackingTouch) {
@@ -258,6 +259,11 @@ public class PlayerActivity extends Activity {
                      *  是否更新，我们在拖动的过程中，进度条会随着接收到的广播再次更新！
                      *  那样进度条就会有跳来跳去
                      */
+                }
+
+                if (isChange){
+                    //  更新 popupwindow 的适配器，即播放列表显示内容
+                    if(mPlaylistArrayAdapter != null)mPlaylistArrayAdapter.notifyDataSetChanged();
                 }
 
             }
@@ -344,33 +350,35 @@ public class PlayerActivity extends Activity {
              mPlayList = MusicUtils.scanLocalMusic(this);
              Log.d(TAG, "  mPlayList = MusicUtils.scanLocalMusic(this)  获取本地列表");
          }
-         mPlayList = MusicUtils.updatePlayList(mPlayList);      //  更新播放列表
 
+         if(mPlayList.size() > 0) {
 
-         //  初始化控件显示内容
-         mPlayPosition = MusicUtils.getPlayPosition();
-         PlayInfo tPlayInfo = mPlayList.get(mPlayPosition);
-         str_musicName = tPlayInfo.getName();
-         str_singer = tPlayInfo.getSinger();
-         maxProgress = tPlayInfo.getDuration();
-         Log.d(TAG, "    初始化控件显示内容 :" +
-                 "    musicname = " + str_musicName +
-                 "    musicname = " + str_singer +
-                 "    maxprogress = " + maxProgress);
+             mPlayList = MusicUtils.updatePlayList(mPlayList);      //  更新播放列表
 
-         //  设置进度条的最大值
-         player_progress_seekbar.setMax(maxProgress);
-         Log.d(TAG, "  player_progress_seekbar.setMax(maxProgress)" +
-                 "    maxProgress = " + maxProgress);
+             //  初始化控件显示内容
+             mPlayPosition = MusicUtils.getPlayPosition();
+             PlayInfo tPlayInfo = mPlayList.get(mPlayPosition);
+             str_musicName = tPlayInfo.getName();
+             str_singer = tPlayInfo.getSinger();
+             maxProgress = tPlayInfo.getDuration();
+             Log.d(TAG, "    初始化控件显示内容 :" +
+                     "    musicname = " + str_musicName +
+                     "    musicname = " + str_singer +
+                     "    maxprogress = " + maxProgress);
 
-         //  转换进度条最大值的显示格式
-         str_maxProgress = String.format("%1$02d:%2$02d",(maxProgress/1000)/60,
-                 (maxProgress/1000)%60);
+             //  设置进度条的最大值
+             player_progress_seekbar.setMax(maxProgress);
+             Log.d(TAG, "  player_progress_seekbar.setMax(maxProgress)" +
+                     "    maxProgress = " + maxProgress);
 
-         title_player_musicName_tv.setText(str_musicName);
-         title_player_singer_tv.setText(str_singer);
-         player_maxProgress_tv.setText(str_maxProgress);
-         if (isPlay)player_mplay_iv.setSelected(true);
+             //  转换进度条最大值的显示格式
+             str_maxProgress = String.format("%1$02d:%2$02d",(maxProgress/1000)/60,
+                     (maxProgress/1000)%60);
+
+             title_player_musicName_tv.setText(str_musicName);
+             title_player_singer_tv.setText(str_singer);
+             player_maxProgress_tv.setText(str_maxProgress);
+         }
 
 
          //  绑定服务 PlayerService
@@ -387,6 +395,11 @@ public class PlayerActivity extends Activity {
 //        stopService(intent);
 
 
+         if (isPlay){
+             player_mplay_iv.setSelected(true);
+         } else {
+             player_mplay_iv.setSelected(false);
+         }
          //  设置按钮的点击事件
         player_mplay_iv.setOnClickListener(mOnClickListener);
         player_mnext_iv.setOnClickListener(mOnClickListener);

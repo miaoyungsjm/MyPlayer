@@ -40,7 +40,7 @@ public class MyFragment extends Fragment {
 
     //  本地广播接收器
     private LocalBroadcastManager mLocalBroadcastManager;    // 本地/局部广播管理器
-    private MYLocalReceiver mMYLocalReceiver;       //  接收器对象，内部类编写处理方法
+    private MYReceiver mMYReceiver;       //  接收器对象，内部类编写处理方法
 
 
     private static final String TAG = "MyFragment";         // 调试信息 TAG 标签
@@ -52,11 +52,11 @@ public class MyFragment extends Fragment {
      *  当收到 BroadcastAction.MyFragmentAction 广播，解析广播内容：jumpto
      *  实现 ChildFragment 的页面跳转 showContent(to)
      */
-    private class MYLocalReceiver extends BroadcastReceiver{
+    private class MYReceiver extends BroadcastReceiver{
         @Override
         public void onReceive(Context context, Intent intent) {
             int to = intent.getIntExtra("jumpto", 0);
-            Log.d(TAG, " -- MYLocalReceiver : onReceive()  " +
+            Log.d(TAG, " -- MYReceiver : onReceive()  " +
                     "  jumpto = " + to);
 
             showContent(to);
@@ -67,9 +67,9 @@ public class MyFragment extends Fragment {
         IntentFilter intentFilter = new IntentFilter();         //  过滤器
         intentFilter.addAction(BroadcastAction.MyFragmentAction);
 
-        mMYLocalReceiver = new MYLocalReceiver();            //  实例化广播接收器对象
-        mLocalBroadcastManager.registerReceiver(mMYLocalReceiver, intentFilter);        //  绑定/注册广播接收器
-        Log.i(TAG," --  mLocalBroadcastManager.registerReceiver(mMYLocalReceiver, intentFilter)");
+        mMYReceiver = new MYReceiver();            //  实例化广播接收器对象
+        mLocalBroadcastManager.registerReceiver(mMYReceiver, intentFilter);        //  绑定/注册广播接收器
+        Log.i(TAG," --  mLocalBroadcastManager.registerReceiver(mMYReceiver, intentFilter)");
     }
 
 
@@ -169,6 +169,6 @@ public class MyFragment extends Fragment {
         super.onDestroyView();
         Log.i(TAG, " ----- MyFragment : onDestroyView()");
 
-        mLocalBroadcastManager.unregisterReceiver(mMYLocalReceiver);    //  注销
+        mLocalBroadcastManager.unregisterReceiver(mMYReceiver);    //  注销
     }
 }

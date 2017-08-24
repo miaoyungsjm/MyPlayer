@@ -1,9 +1,13 @@
 package my.com.fragment.childfragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,7 +22,9 @@ import java.util.List;
 
 import my.com.PlayerActivity;
 import my.com.R;
+import my.com.action.BroadcastAction;
 import my.com.adapter.MyLocalRecyclerViewAdapter;
+import my.com.fragment.MyFragment;
 import my.com.model.PlayInfo;
 import my.com.service.PlayerService;
 import my.com.utils.MusicUtils;
@@ -27,6 +33,7 @@ import my.com.utils.MusicUtils;
  * Created by MY on 2017/8/16.
  *
  */
+
 
 public class ChildFragment_My_Local extends Fragment{
 
@@ -40,13 +47,59 @@ public class ChildFragment_My_Local extends Fragment{
     MyLocalRecyclerViewAdapter mMyLocalRecyclerViewAdapter;
 
 
+    //  本地广播接收器
+    private LocalBroadcastManager mLocalBroadcastManager;    // 本地/局部广播管理器
+    private MYLocalReceiver mMYLocalReceiver;       //  接收器对象，内部类编写处理方法
+    boolean isChange = false;
+
+
     private static final String TAG = "ChildFragment_My_Local";
+
+
+    /*
+     *  本地广播接收器
+     */
+    private class MYLocalReceiver extends BroadcastReceiver {
+        PlayInfo tPlayInfo;
+        String musicname;
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            isChange = intent.getBooleanExtra("isChange", false);
+            if(isChange){
+                musicname = intent.getStringExtra("musicname");
+                for (int i = 0 ; i < mList.size() ; i++){
+                    tPlayInfo = mList.get(i);
+                    if (tPlayInfo.getName().equals(musicname)){
+                        tPlayInfo.mState = true;
+                    }else {
+                        tPlayInfo.mState = false;
+                    }
+                }
+
+                mMyLocalRecyclerViewAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+    //  注册 - 本地广播接收器
+    private void local_receiver_register(){
+        IntentFilter intentFilter = new IntentFilter();         //  过滤器
+        intentFilter.addAction(BroadcastAction.PlayInfoProgressAction);
+
+        mMYLocalReceiver = new MYLocalReceiver();            //  实例化广播接收器对象
+        mLocalBroadcastManager.registerReceiver(mMYLocalReceiver, intentFilter);        //  绑定/注册广播接收器
+        Log.i(TAG," --  mLocalBroadcastManager.registerReceiver(mMYLocalReceiver, intentFilter)");
+    }
+
+
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.i(TAG, " ----- ChildFragment_My_Local : onCreateView()");
+
+        mLocalBroadcastManager = LocalBroadcastManager.getInstance(getContext());
+        local_receiver_register();
 
         root = inflater.inflate(R.layout.childfragment_my_loacl, null);
 
@@ -56,7 +109,7 @@ public class ChildFragment_My_Local extends Fragment{
         if (mList == null){
             mList = new ArrayList<>();
         }
-        mList = MusicUtils.scanLocalMusic(getActivity());       //  注意 MusicUtils.scanLocalMusic(getActivity()) 的返回值（并不是静态变量）
+        mList = MusicUtils.scanLocalMusic(getActivity());
         Log.d(TAG, "  MusicUtils.scanLocalMusic(this)  获取本地列表");
 
         initRecyclerView();
@@ -82,25 +135,20 @@ public class ChildFragment_My_Local extends Fragment{
             PlayInfo tPlayInfo;
             @Override
             public void onClick(View v) {
-                mList = MusicUtils.scanLocalMusic(getActivity());
-                mList = MusicUtils.updatePlayList(mList); //  注意 MusicUtils.updatePlayList(mList) 的返回值（是静态变量）
-                Log.d(TAG, "  MusicUtils.updatePlayList(mList);");
 
-                int mPlayPosition = MusicUtils.getPlayPosition();//  获取前播放位置
+                List<PlayInfo> tList = new ArrayList<>();
+                tList = MusicUtils.scanLocalMusic(getActivity());
+                MusicUtils.updatePlayList(tList);
 
-                if (mPlayPosition >= 0 ){//  重置前播放状态
-                    tPlayInfo = mList.get(mPlayPosition);
+
+                for (int i = 0; i < mList.size(); i++){
+                    tPlayInfo = mList.get(i);
                     tPlayInfo.mState = false;
-                    Log.d(TAG, " tPlayInfo.mState = false    mPlayPosition = " + mPlayPosition);
                 }
 
                 MusicUtils.setPlayPosition(0);
                 tPlayInfo = mList.get(0);
                 tPlayInfo.mState = true;
-
-                //  重新初始化 RecyclerView
-                initRecyclerView();
-
 
                 //  重启服务
                 Intent intent = new Intent(getActivity(), PlayerService.class);
@@ -141,5 +189,7 @@ public class ChildFragment_My_Local extends Fragment{
     public void onDestroyView() {
         super.onDestroyView();
         Log.i(TAG, " ----- ChildFragment_My_Local : onDestroyView()");
+
+        mLocalBroadcastManager.unregisterReceiver(mMYLocalReceiver);
     }
 }

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import my.com.R;
@@ -70,23 +71,21 @@ public class MyLocalRecyclerViewAdapter extends RecyclerView.Adapter<MyLocalRecy
             PlayInfo tPlayInfo;
             @Override
             public void onClick(View v) {
-                mList = MusicUtils.scanLocalMusic(mContext);
-                mList = MusicUtils.updatePlayList(mList);
-                Log.d(TAG, "  MusicUtils.updatePlayList(mList);");
 
-                int mPlayPosition = MusicUtils.getPlayPosition();//  获取前播放位置
+                List<PlayInfo> tList = new ArrayList<>();
+                tList = MusicUtils.scanLocalMusic(mContext);
+                MusicUtils.updatePlayList(tList);
 
-                if (mPlayPosition >= 0){//  重置前播放状态
-                    tPlayInfo = mList.get(mPlayPosition);
+                for (int i = 0 ; i < mList.size() ; i++){
+                    tPlayInfo = mList.get(i);
                     tPlayInfo.mState = false;
-                    Log.d(TAG, "  tPlayInfo.mState = false    mPlayPosition = " + mPlayPosition);
                 }
 
                 int position = holder.getAdapterPosition();
                 MusicUtils.setPlayPosition(position);
                 tPlayInfo = mList.get(position);
                 tPlayInfo.mState = true;
-                Log.d(TAG, "  tPlayInfo.mState = true    mPlayPosition = " + mPlayPosition);
+                Log.d(TAG, "  position = " + position);
                 Toast.makeText(v.getContext(), tPlayInfo.getName(), Toast.LENGTH_SHORT).show();
 
                 //  重启服务
