@@ -104,6 +104,7 @@ public class PlayerService extends Service{
                 if (mPlayPosition >= 0 ){//  重置前播放状态
                     tPlayInfo = mPlayList.get(mPlayPosition);
                     tPlayInfo.mState = false;
+                    Log.d(TAG, " tPlayInfo.mState = false    mPlayPosition = " + mPlayPosition);
                 }
 
                 mPlayPosition = position;//  设置新播放位置
@@ -111,6 +112,7 @@ public class PlayerService extends Service{
 
                 tPlayInfo = mPlayList.get(mPlayPosition);
                 tPlayInfo.mState = true;
+                Log.d(TAG, " tPlayInfo.mState = true    mPlayPosition = " + mPlayPosition);
 
                 musicPath = tPlayInfo.getPath();
                 musicName = tPlayInfo.getName();
@@ -118,7 +120,7 @@ public class PlayerService extends Service{
 
                 if (musicPath != null)init_MediaPlayer();// 初始化多媒体播放器
             }else {
-                Log.d(TAG, "  mPlayList is null");
+                Log.d(TAG, "  mPlayList.size() == 0");
             }
         }
         public void mToLoop(boolean isLoop){
@@ -240,25 +242,31 @@ public class PlayerService extends Service{
         //  实例化 / 重置 播放列表
         if (mPlayList == null){
             mPlayList = new ArrayList<>();
-        }else {
-            mPlayList.clear();
         }
 
         mPlayList = MusicUtils.getPlayList();//  获取列表
-
+        Log.d(TAG, "    mPlayList = MusicUtils.getPlayList()  获取列表");
         if (mPlayList.size() <= 0){//  如果播放列表为空，则扫描本地音乐
             mPlayList = MusicUtils.scanLocalMusic(this);
             Log.d(TAG, "  mPlayList = MusicUtils.scanLocalMusic(this)  获取本地列表");
         }
 
-        PlayInfo tPlayInfo = mPlayList.get(MusicUtils.getPlayPosition());
-        tPlayInfo.mState = true;
+        if(mPlayList.size() > 0) {
+            mPlayList = MusicUtils.updatePlayList(mPlayList);
 
-        musicPath = tPlayInfo.getPath();
-        musicName = tPlayInfo.getName();
-        singer = tPlayInfo.getSinger();
+            mPlayPosition = MusicUtils.getPlayPosition();
 
-        if (musicPath != null)init_MediaPlayer();           // 初始化多媒体播放器
+            PlayInfo tPlayInfo = mPlayList.get(mPlayPosition);
+            tPlayInfo.mState = true;
+
+            musicPath = tPlayInfo.getPath();
+            musicName = tPlayInfo.getName();
+            singer = tPlayInfo.getSinger();
+
+            if (musicPath != null)init_MediaPlayer();           // 初始化多媒体播放器
+        }else {
+            Log.d(TAG, "  mPlayList is null");
+        }
 
         return super.onStartCommand(intent, flags, startId);
     }

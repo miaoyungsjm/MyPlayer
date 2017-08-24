@@ -14,9 +14,9 @@ import android.widget.Toast;
 import java.util.List;
 
 import my.com.R;
-import my.com.action.BroadcastAction;
-import my.com.model.MyMain;
 import my.com.model.PlayInfo;
+import my.com.service.PlayerService;
+import my.com.utils.MusicUtils;
 
 /**
  * Created by MY on 2017/8/16.
@@ -25,7 +25,7 @@ import my.com.model.PlayInfo;
 
 public class MyLocalRecyclerViewAdapter extends RecyclerView.Adapter<MyLocalRecyclerViewAdapter.ViewHolder>{
 
-    private List<PlayInfo> mlist;
+    private List<PlayInfo> mList;
 
     private Context mContext;
 
@@ -56,7 +56,7 @@ public class MyLocalRecyclerViewAdapter extends RecyclerView.Adapter<MyLocalRecy
      *  构造函数
      */
     public MyLocalRecyclerViewAdapter(List<PlayInfo> list, Context context) {
-        mlist = list;
+        mList = list;
         mContext = context;
     }
 
@@ -67,25 +67,35 @@ public class MyLocalRecyclerViewAdapter extends RecyclerView.Adapter<MyLocalRecy
         final ViewHolder holder = new ViewHolder(view);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
+            PlayInfo tPlayInfo;
             @Override
             public void onClick(View v) {
+                mList = MusicUtils.scanLocalMusic(mContext);
+                mList = MusicUtils.updatePlayList(mList);
+                Log.d(TAG, "  MusicUtils.updatePlayList(mList);");
+
+                int mPlayPosition = MusicUtils.getPlayPosition();//  获取前播放位置
+
+                if (mPlayPosition >= 0){//  重置前播放状态
+                    tPlayInfo = mList.get(mPlayPosition);
+                    tPlayInfo.mState = false;
+                    Log.d(TAG, "  tPlayInfo.mState = false    mPlayPosition = " + mPlayPosition);
+                }
+
                 int position = holder.getAdapterPosition();
-                PlayInfo playInfo = mlist.get(position);
-                Toast.makeText(v.getContext(), playInfo.getName(), Toast.LENGTH_SHORT).show();
+                MusicUtils.setPlayPosition(position);
+                tPlayInfo = mList.get(position);
+                tPlayInfo.mState = true;
+                Log.d(TAG, "  tPlayInfo.mState = true    mPlayPosition = " + mPlayPosition);
+                Toast.makeText(v.getContext(), tPlayInfo.getName(), Toast.LENGTH_SHORT).show();
+
+                //  重启服务
+                Intent intent = new Intent(mContext, PlayerService.class);
+                mContext.startService(intent);
+                Log.d(TAG, "  startService(intent)");
 
 
-//                int jumpto = position+1;
-//                Intent intent = new Intent(BroadcastAction.MyFragmentAction);
-//                intent.putExtra("jumpto", jumpto);
-//
-//
-//                if(mLocalBroadcastManager == null){
-//                    mLocalBroadcastManager = LocalBroadcastManager.getInstance(mContext);
-//                }
-//                mLocalBroadcastManager.sendBroadcast(intent);
-//                Log.i(TAG, " -- MyMainRecyclerViewAdapter : mLocalBroadcastManager.sendBroadcast(intent)  " +
-//                        "  Jump To :" + jumpto );
-
+                notifyDataSetChanged();
             }
         });
 
@@ -94,14 +104,20 @@ public class MyLocalRecyclerViewAdapter extends RecyclerView.Adapter<MyLocalRecy
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        PlayInfo playInfo = mlist.get(position);
-        holder.my_local_item_name_tv.setText(playInfo.getName());
-        holder.my_local_item_singer_tv.setText(playInfo.getSinger());
-        holder.my_local_item_size_tv.setText(Long.toString(playInfo.getSize()) + "M");
+        PlayInfo tPlayInfo = mList.get(position);
+        holder.my_local_item_name_tv.setText(tPlayInfo.getName());
+        holder.my_local_item_singer_tv.setText(tPlayInfo.getSinger());
+        holder.my_local_item_size_tv.setText(Long.toString(tPlayInfo.getSize()/1000000) + "M");
+
+        if(tPlayInfo.getState()){
+            holder.my_local_item_name_tv.setSelected(true);
+        }else {
+            holder.my_local_item_name_tv.setSelected(false);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mlist.size();
+        return mList.size();
     }
 }

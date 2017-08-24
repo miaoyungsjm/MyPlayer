@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +19,9 @@ import java.util.List;
 import my.com.PlayerActivity;
 import my.com.R;
 import my.com.adapter.MyLocalRecyclerViewAdapter;
-import my.com.adapter.MyMainRecyclerViewAdapter;
-import my.com.model.MyMain;
 import my.com.model.PlayInfo;
+import my.com.service.PlayerService;
+import my.com.utils.MusicUtils;
 
 /**
  * Created by MY on 2017/8/16.
@@ -33,9 +33,11 @@ public class ChildFragment_My_Local extends Fragment{
     View root;
 
     ImageView my_local_playing_iv;
+    LinearLayout my_local_playall_ll;
     RecyclerView my_local_recyclerview;
 
     private List<PlayInfo> mList;
+    MyLocalRecyclerViewAdapter mMyLocalRecyclerViewAdapter;
 
 
     private static final String TAG = "ChildFragment_My_Local";
@@ -50,14 +52,21 @@ public class ChildFragment_My_Local extends Fragment{
 
         initView(root);
 
-        initRV(root);
+        //  实例化播放列表
+        if (mList == null){
+            mList = new ArrayList<>();
+        }
+        mList = MusicUtils.scanLocalMusic(getActivity());       //  注意 MusicUtils.scanLocalMusic(getActivity()) 的返回值（并不是静态变量）
+        Log.d(TAG, "  MusicUtils.scanLocalMusic(this)  获取本地列表");
+
+        initRecyclerView();
 
         return root;
     }
 
     private void initView(View v){
+        //  播放器按钮
         my_local_playing_iv = (ImageView) v.findViewById(R.id.my_local_playing_iv);
-
         my_local_playing_iv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,37 +76,50 @@ public class ChildFragment_My_Local extends Fragment{
             }
         });
 
+        //  播放全部按钮
+        my_local_playall_ll = (LinearLayout) v.findViewById(R.id.my_local_playall_ll);
+        my_local_playall_ll.setOnClickListener(new View.OnClickListener() {
+            PlayInfo tPlayInfo;
+            @Override
+            public void onClick(View v) {
+                mList = MusicUtils.scanLocalMusic(getActivity());
+                mList = MusicUtils.updatePlayList(mList); //  注意 MusicUtils.updatePlayList(mList) 的返回值（是静态变量）
+                Log.d(TAG, "  MusicUtils.updatePlayList(mList);");
 
+                int mPlayPosition = MusicUtils.getPlayPosition();//  获取前播放位置
+
+                if (mPlayPosition >= 0 ){//  重置前播放状态
+                    tPlayInfo = mList.get(mPlayPosition);
+                    tPlayInfo.mState = false;
+                    Log.d(TAG, " tPlayInfo.mState = false    mPlayPosition = " + mPlayPosition);
+                }
+
+                MusicUtils.setPlayPosition(0);
+                tPlayInfo = mList.get(0);
+                tPlayInfo.mState = true;
+
+                //  重新初始化 RecyclerView
+                initRecyclerView();
+
+
+                //  重启服务
+                Intent intent = new Intent(getActivity(), PlayerService.class);
+                getActivity().startService(intent);
+                Log.d(TAG, "  startService(intent)");
+
+
+                mMyLocalRecyclerViewAdapter.notifyDataSetChanged();
+            }
+        });
+
+        //  RecyclerView 控件
         my_local_recyclerview = (RecyclerView) v.findViewById(R.id.my_local_recyclerview);
     }
 
-    private void initRV(View v){
-        mList =  new ArrayList<>();
-        //  添加测试数据
-        for (int i = 0; i < 2 ; i++){
-            PlayInfo Apple = new PlayInfo("Apple", "singer", 10);
-            mList.add(Apple);
-            PlayInfo Banana = new PlayInfo("Banana", "singer", 10);
-            mList.add(Banana);
-            PlayInfo Orange = new PlayInfo("Orange", "singer", 10);
-            mList.add(Orange);
-            PlayInfo Watermelon = new PlayInfo("Watermelon", "singer", 10);
-            mList.add(Watermelon);
-            PlayInfo Pear = new PlayInfo("Pear", "singer", 10);
-            mList.add(Pear);
-            PlayInfo Grape = new PlayInfo("Grape", "singer", 10);
-            mList.add(Grape);
-            PlayInfo Pineapple = new PlayInfo("Pineapple", "singer", 10);
-            mList.add(Pineapple);
-            PlayInfo Strawberry = new PlayInfo("Strawberry", "singer", 10);
-            mList.add(Strawberry);
-            PlayInfo Cherry = new PlayInfo("Cherry", "singer", 10);
-            mList.add(Cherry);
-            PlayInfo Mango = new PlayInfo("Mango", "singer", 10);
-            mList.add(Mango);
-        }
-
-
+    /*
+     *  初始化 RecyclerView
+     */
+    private void initRecyclerView(){
 //        RecyclerView my_local_recyclerview = (RecyclerView) v.findViewById(R.id.my_local_recyclerview);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -105,7 +127,7 @@ public class ChildFragment_My_Local extends Fragment{
 
         my_local_recyclerview.setLayoutManager(layoutManager);
 
-        MyLocalRecyclerViewAdapter mMyLocalRecyclerViewAdapter = new MyLocalRecyclerViewAdapter(mList, getContext());
+        mMyLocalRecyclerViewAdapter = new MyLocalRecyclerViewAdapter(mList, getContext());
 
         my_local_recyclerview.setAdapter(mMyLocalRecyclerViewAdapter);
 

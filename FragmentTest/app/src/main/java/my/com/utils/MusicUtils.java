@@ -1,8 +1,10 @@
 package my.com.utils;
 
+import android.Manifest;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +18,13 @@ import my.com.model.PlayInfo;
  * 1）记录、更新播放列表
  * 2）扫描本地音频
  */
-
 public class MusicUtils {
 
     //  静态变量 - 播放列表、播放位置
     private static List<PlayInfo> mPlayList = new ArrayList<>();
     private static int mPlayPosition = 0 ;
 
+    private static final String TAG = "MusicUtils";         //  调试信息 TAG 标签
 
     //  构造函数
     public MusicUtils() {
@@ -33,25 +35,33 @@ public class MusicUtils {
 
     //  获取、设置播放列表
     public static List<PlayInfo> getPlayList(){
+        Log.i(TAG, " -- getPlayList()");
+        if (mPlayList.size()==0)Log.i(TAG, "    mPlayList.size() == 0");
         return mPlayList;
     }
     public static List<PlayInfo> updatePlayList(List<PlayInfo> list){
+        Log.i(TAG, " -- updatePlayList()");
         mPlayList = list;
-        return null;
+        return mPlayList;
     }
 
 
     //  获取、设置播放位置
     public static void setPlayPosition(int p){
         mPlayPosition = p;
+        Log.i(TAG, " -- setPlayPosition()  mPlayPosition = " + mPlayPosition);
     }
     public static int getPlayPosition(){
+        Log.i(TAG, " -- getPlayPosition()  mPlayPosition = " + mPlayPosition);
         return mPlayPosition;
+
     }
 
 
     //  扫描本地音频文件，并返回 List<PlayInfo>
     public static List<PlayInfo> scanLocalMusic(Context context){
+        List<PlayInfo> mList = new ArrayList<>();
+
         Cursor cursor = context.getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 null, null, null,
@@ -78,13 +88,12 @@ public class MusicUtils {
                         playInfo.mSinger = str[0];
                         playInfo.mName = str[1];
                     }
-                    mPlayList.add(playInfo);
+                    mList.add(playInfo);
                 }
             }
             // 释放资源
             cursor.close();
         }
-
-        return mPlayList;
+        return mList;
     }
 }

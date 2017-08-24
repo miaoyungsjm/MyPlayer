@@ -41,7 +41,6 @@ import my.com.utils.MusicUtils;
  * Created by MY on 2017/7/21.
  *
  */
-
 public class PlayerActivity extends Activity {
 
     //  音量部分
@@ -61,9 +60,10 @@ public class PlayerActivity extends Activity {
 
     //  播放状态
     private int mPlayPosition;             //  播放位置
-    private boolean isFinish = false;
     private boolean isPlay = false;     //  判断是否在播放，更新进度条的判断
     private boolean isLoop = false;     //  判断是否要循环播放
+    private boolean isFinish = false;
+    private boolean onTrackingTouch = false;
 
     //  按钮
     private ImageView player_mplay_iv;          //  播放按钮
@@ -215,7 +215,7 @@ public class PlayerActivity extends Activity {
 
                 //  设置进度条的最大值
                 player_progress_seekbar.setMax(maxProgress);
-                Log.d(TAG, "  player_progress_seekbar.setMax(maxProgress)\n" +
+                Log.d(TAG, "  player_progress_seekbar.setMax(maxProgress)" +
                         "    maxProgress = " + maxProgress);
 
                 //  转换进度条最大值的显示格式
@@ -236,37 +236,28 @@ public class PlayerActivity extends Activity {
                         "    currentprogress = " + currentProgress +
                         "    isFinish = " + isFinish);
 
-                //  设置进度条的当前值
-                if(isPlay){
-                    player_progress_seekbar.setProgress(currentProgress);
+                if(isFinish){  //   当收到服务发来的 isFinish == true
+                    isPlay = false;
+                    player_mplay_iv.setSelected(false);     //  重置按钮
+
+                    //  更新 popupwindow 的适配器，即播放列表显示内容
+                    if(mPlaylistArrayAdapter != null)mPlaylistArrayAdapter.notifyDataSetChanged();
+                } else { //  isFinish == false
+                    isPlay = true;
+                    if (onTrackingTouch) {
+                        player_mplay_iv.setSelected(false);
+                    }else {
+                        player_mplay_iv.setSelected(true);
+                        player_progress_seekbar.setProgress(currentProgress);
+                    }
                     /*
-                     *  这个 isPlay 的布尔变量的使用原因
+                     *  这个 onTrackingTouch 的布尔变量的使用原因
                      *  因为服务正在播放音乐时是不断发送本地广播，为了告诉活动当前播放进度，
                      *  而活动肯定要接收服务发过来的广播。但是，是否更新进度条可以有自身选择嘛
                      *  比如，现在正在播歌，而我们想拖动进度条改变进度，如果不设置一个值来决定
                      *  是否更新，我们在拖动的过程中，进度条会随着接收到的广播再次更新！
                      *  那样进度条就会有跳来跳去
                      */
-                }
-
-                //  播放完一首歌
-                if(isFinish){
-                    player_mplay_iv.setSelected(false);     //  重置按钮
-                    isPlay = false;
-
-                    if (isLoop){        //  是否单曲循环
-                        player_mplay_iv.setSelected(true);
-                        isPlay = true;
-
-                        //  更新 popupwindow 的适配器，即播放列表显示内容
-                        if(mPlaylistArrayAdapter != null)mPlaylistArrayAdapter.notifyDataSetChanged();
-                    }
-                }else {
-                    player_mplay_iv.setSelected(true);
-                    isPlay = true;
-
-                    //  更新 popupwindow 的适配器，即播放列表显示内容
-                    if(mPlaylistArrayAdapter != null)mPlaylistArrayAdapter.notifyDataSetChanged();
                 }
 
             }
@@ -297,11 +288,11 @@ public class PlayerActivity extends Activity {
 
         // 设置音量拖动条的最大值
         player_volume_seekbar.setMax(maxVolume);
-        Log.d(TAG, "  player_volume_seekbar.setMax(maxVolume)\n" +
+        Log.d(TAG, "  player_volume_seekbar.setMax(maxVolume)" +
                 "    maxVolume = " + maxVolume);
         // 设置音量拖动条的当前值
         player_volume_seekbar.setProgress(currentVolume);
-        Log.d(TAG, "  player_volume_seekbar.setProgress(currentVolume)\n" +
+        Log.d(TAG, "  player_volume_seekbar.setProgress(currentVolume)" +
                 "    currentVolume = " + currentVolume);
 
         // 设置拖动条事件监听器，volume_seekBarChangeListener 为对应监听方法的对象（内部类）
@@ -339,43 +330,64 @@ public class PlayerActivity extends Activity {
     /*
      *  播放器的处理
      */
-    private void player(){
-        Log.d(TAG, " -- player");
+     void player(){
+        Log.d(TAG, " -- player()");
 
-        //  实例化播放列表
-        if (mPlayList == null){
-            mPlayList = new ArrayList<>();
-        }else {
-            mPlayList.clear();
-        }
-
-        mPlayList = MusicUtils.getPlayList();       //  获取列表
-        Log.d(TAG, "  MusicUtils.getPlayList()  获取列表");
-
-        if (mPlayList.size() <= 0){     //  如果播放列表为空，则扫描本地音乐
-            mPlayList = MusicUtils.scanLocalMusic(this);
-            Log.d(TAG, "  MusicUtils.scanLocalMusic(this)  获取本地列表");
-        }
+         //  实例化播放列表
+         if (mPlayList == null){
+             mPlayList = new ArrayList<>();
+         }
+         //  获取播放列表
+         mPlayList = MusicUtils.getPlayList();
+         Log.d(TAG, "    mPlayList = MusicUtils.getPlayList()  获取播放列表");
+         if (mPlayList.size() <= 0){//  意外情况 -- 如果播放列表为空，则扫描本地音乐
+             mPlayList = MusicUtils.scanLocalMusic(this);
+             Log.d(TAG, "  mPlayList = MusicUtils.scanLocalMusic(this)  获取本地列表");
+         }
+         mPlayList = MusicUtils.updatePlayList(mPlayList);      //  更新播放列表
 
 
+         //  初始化控件显示内容
+         mPlayPosition = MusicUtils.getPlayPosition();
+         PlayInfo tPlayInfo = mPlayList.get(mPlayPosition);
+         str_musicName = tPlayInfo.getName();
+         str_singer = tPlayInfo.getSinger();
+         maxProgress = tPlayInfo.getDuration();
+         Log.d(TAG, "    初始化控件显示内容 :" +
+                 "    musicname = " + str_musicName +
+                 "    musicname = " + str_singer +
+                 "    maxprogress = " + maxProgress);
+
+         //  设置进度条的最大值
+         player_progress_seekbar.setMax(maxProgress);
+         Log.d(TAG, "  player_progress_seekbar.setMax(maxProgress)" +
+                 "    maxProgress = " + maxProgress);
+
+         //  转换进度条最大值的显示格式
+         str_maxProgress = String.format("%1$02d:%2$02d",(maxProgress/1000)/60,
+                 (maxProgress/1000)%60);
+
+         title_player_musicName_tv.setText(str_musicName);
+         title_player_singer_tv.setText(str_singer);
+         player_maxProgress_tv.setText(str_maxProgress);
+         if (isPlay)player_mplay_iv.setSelected(true);
+
+
+         //  绑定服务 PlayerService
         Intent intent = new Intent(PlayerActivity.this, PlayerService.class);
-
-        //  启动服务 PlayerService
-        startService(intent);
-        Log.d(TAG, "  startService(intent)");
-
-        // 绑定服务 PlayerService
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
         Log.d(TAG, "  bindService(intent, serviceConnection, BIND_AUTO_CREATE)");
 
-//        // 解绑服务
+
+//        //  解绑服务
 //        unbindService(serviceConnection);
 //
-//        // 关闭 PlayerService
+//        //  关闭 PlayerService
 //        Intent intent = new Intent(PlayerActivity.this, PlayerService.class);
 //        stopService(intent);
 
-        //  设置按钮的点击事件
+
+         //  设置按钮的点击事件
         player_mplay_iv.setOnClickListener(mOnClickListener);
         player_mnext_iv.setOnClickListener(mOnClickListener);
         player_mlast_iv.setOnClickListener(mOnClickListener);
@@ -396,17 +408,14 @@ public class PlayerActivity extends Activity {
             switch (v.getId())
             {
                 case R.id.player_mplay_iv:
-                    if (isPlay){        //  设置暂停状态
-                        player_mplay_iv.setSelected(false);
-                        isPlay = false;
-
+                    if (isPlay){ //  如果正在播放状态翻转
                         playerControlBinder.mPause();
-
-                    } else {        //  设置播放状态
-                        player_mplay_iv.setSelected(true);
-                        isPlay = true;
-
+                        isPlay = false;
+                        player_mplay_iv.setSelected(false);
+                    } else {
                         playerControlBinder.mPlay();
+                        isPlay = true;
+                        player_mplay_iv.setSelected(true);
                     }
                     break;
 
@@ -516,8 +525,9 @@ public class PlayerActivity extends Activity {
             public void onClick(View v) {
                 if(mPlayList != null && mPlaylistArrayAdapter != null){
                     mPlayList.clear();
+                    mPlayList = MusicUtils.updatePlayList(mPlayList);
+
                     mPlaylistArrayAdapter.notifyDataSetChanged();
-                    MusicUtils.updatePlayList(mPlayList);
                 }
             }
         });
@@ -572,16 +582,18 @@ public class PlayerActivity extends Activity {
 
         ListView playlist_listView = (ListView) v.findViewById(R.id.playlist_listView);
 
-        //  初始化 PlayListArrayAdapter 适配器
-        if(mPlaylistArrayAdapter == null){
-            //  实例化适配器，传入自定义 item 布局 和 mPlayList
-            mPlaylistArrayAdapter = new PlayListArrayAdapter(PlayerActivity.this,
-                    R.layout.popupwindow_item_playinfo, mPlayList);
+        //  获取播放列表
+        mPlayList = MusicUtils.getPlayList();
+        Log.d(TAG, "    mPlayList = MusicUtils.getPlayList()  获取播放列表");
 
-            //  使用默认布局的适配器
-//            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(PlayerActivity.this,
-//                    android.R.layout.simple_list_item_1, data);
-        }
+        //  实例化适配器，传入自定义 item 布局 和 mPlayList
+        mPlaylistArrayAdapter = new PlayListArrayAdapter(PlayerActivity.this,
+                R.layout.popupwindow_item_playinfo, mPlayList);
+
+        //  使用默认布局的适配器
+//        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(PlayerActivity.this,
+//                android.R.layout.simple_list_item_1, data);
+
 
         //  将 playlist_listView 绑定该适配器
         playlist_listView.setAdapter(mPlaylistArrayAdapter);
@@ -600,11 +612,11 @@ public class PlayerActivity extends Activity {
                 //  切歌
                 playerControlBinder.mSkip(position);
 
-                //  刷新适配器
-                mPlaylistArrayAdapter.notifyDataSetChanged();
-
                 player_mplay_iv.setSelected(true);
                 isPlay = true;
+
+                //  刷新适配器
+                mPlaylistArrayAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -629,18 +641,18 @@ public class PlayerActivity extends Activity {
         public void onStartTrackingTouch(SeekBar seekBar) {
             Log.d(TAG," -- OnSeekBarChangeListener : onStartTrackingTouch");
 
-            //  当拖动条滑动开始时触发
             player_mplay_iv.setSelected(false);
-            isPlay = false;
+
+            onTrackingTouch = true;
 
         }
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
             Log.d(TAG," -- OnSeekBarChangeListener : onStopTrackingTouch");
 
-            // 当拖动条滑动结束后触发
             player_mplay_iv.setSelected(true);
-            isPlay = true;
+
+            onTrackingTouch = false;
 
             //  通过绑定服务的 playerControlBinder 对象的接口函数，更改播放进度
             playerControlBinder.mSeekTo(player_progress_seekbar.getProgress());
@@ -650,9 +662,9 @@ public class PlayerActivity extends Activity {
 
 
     /*
-     * 重写按键事件 onKeyDown
-     * 1）重写返回键的功能为：将活动转至后台 moveTaskToBack
-     * 2）音量按键的重写已被注释，改为使用音量变化的广播接收器 volumeChangeReceiver
+     *  重写按键事件 onKeyDown
+     *  1）重写返回键的功能为：将活动转至后台 moveTaskToBack
+     *  2）音量按键的重写已被注释，改为使用音量变化的广播接收器 volumeChangeReceiver
      */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

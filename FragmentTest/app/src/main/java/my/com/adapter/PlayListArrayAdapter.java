@@ -104,8 +104,9 @@ public class PlayListArrayAdapter extends ArrayAdapter<PlayInfo>{
                 int mPlayPosition = MusicUtils.getPlayPosition();
                 if(position <= mPlayPosition)MusicUtils.setPlayPosition(mPlayPosition-1);      //  更新对应的播放位置
                 mList.remove(position);
+                mList = MusicUtils.updatePlayList(mList);       //  更新 MusicUtils 类播放列表
+
                 notifyDataSetChanged();     //  更新适配器
-                MusicUtils.updatePlayList(mList);       //  更新 MusicUtils 类播放列表
             }
         });
 

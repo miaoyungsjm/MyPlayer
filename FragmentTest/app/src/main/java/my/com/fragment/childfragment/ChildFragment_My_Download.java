@@ -16,8 +16,9 @@ import java.util.List;
 
 import my.com.PlayerActivity;
 import my.com.R;
+import my.com.adapter.MyLocalRecyclerViewAdapter;
 import my.com.adapter.MyMainRecyclerViewAdapter;
-import my.com.model.MyMain;
+import my.com.model.PlayInfo;
 
 /**
  * Created by MY on 2017/8/16.
@@ -31,7 +32,7 @@ public class ChildFragment_My_Download extends Fragment{
     ImageView my_download_playing_iv;
 
 
-    private List<MyMain> mMyMainList = new ArrayList<>();
+    private List<PlayInfo> mPlayInfoList = new ArrayList<>();
 
 
     @Nullable
@@ -63,26 +64,26 @@ public class ChildFragment_My_Download extends Fragment{
     private void initRV(View v){
         //  添加测试数据
         for (int i = 0; i < 2 ; i++){
-            MyMain Apple = new MyMain(R.mipmap.ic_launcher, "Apple", 0);
-            mMyMainList.add(Apple);
-            MyMain Banana = new MyMain(R.mipmap.ic_launcher, "Banana", 0);
-            mMyMainList.add(Banana);
-            MyMain Orange = new MyMain(R.mipmap.ic_launcher, "Orange", 0);
-            mMyMainList.add(Orange);
-            MyMain Watermelon = new MyMain(R.mipmap.ic_launcher, "Watermelon", 0);
-            mMyMainList.add(Watermelon);
-            MyMain Pear = new MyMain(R.mipmap.ic_launcher, "Pear", 0);
-            mMyMainList.add(Pear);
-            MyMain Grape = new MyMain(R.mipmap.ic_launcher, "Grape", 0);
-            mMyMainList.add(Grape);
-            MyMain Pineapple = new MyMain(R.mipmap.ic_launcher, "Pineapple", 0);
-            mMyMainList.add(Pineapple);
-            MyMain Strawberry = new MyMain(R.mipmap.ic_launcher, "Strawberry", 0);
-            mMyMainList.add(Strawberry);
-            MyMain Cherry = new MyMain(R.mipmap.ic_launcher, "Cherry", 0);
-            mMyMainList.add(Cherry);
-            MyMain Mango = new MyMain(R.mipmap.ic_launcher, "Mango", 0);
-            mMyMainList.add(Mango);
+            PlayInfo Apple = new PlayInfo("Apple","Singer", 0);
+            mPlayInfoList.add(Apple);
+            PlayInfo Banana = new PlayInfo("Banana","Singer", 0);
+            mPlayInfoList.add(Banana);
+            PlayInfo Orange = new PlayInfo("Orange","Singer", 0);
+            mPlayInfoList.add(Orange);
+            PlayInfo Watermelon = new PlayInfo("Watermelon","Singer", 0);
+            mPlayInfoList.add(Watermelon);
+            PlayInfo Pear = new PlayInfo("Pear","Singer", 0);
+            mPlayInfoList.add(Pear);
+            PlayInfo Grape = new PlayInfo("Grape","Singer", 0);
+            mPlayInfoList.add(Grape);
+            PlayInfo Pineapple = new PlayInfo("Pineapple","Singer", 0);
+            mPlayInfoList.add(Pineapple);
+            PlayInfo Strawberry = new PlayInfo("Strawberry","Singer", 0);
+            mPlayInfoList.add(Strawberry);
+            PlayInfo Cherry = new PlayInfo("Cherry","Singer", 0);
+            mPlayInfoList.add(Cherry);
+            PlayInfo Mango = new PlayInfo("Mango","Singer", 0);
+            mPlayInfoList.add(Mango);
         }
 
 
@@ -93,9 +94,9 @@ public class ChildFragment_My_Download extends Fragment{
 
         recyclerView.setLayoutManager(layoutManager);
 
-        MyMainRecyclerViewAdapter mMyMainRecyclerViewAdapter = new MyMainRecyclerViewAdapter(mMyMainList, getContext());
+        MyLocalRecyclerViewAdapter mMyLocalRecyclerViewAdapter = new MyLocalRecyclerViewAdapter(mPlayInfoList, getContext());
 
-        recyclerView.setAdapter(mMyMainRecyclerViewAdapter);
+        recyclerView.setAdapter(mMyLocalRecyclerViewAdapter);
 
         //设置Item增加、移除动画
 //        my_local_recyclerview.setItemAnimator(new DefaultItemAnimator());
