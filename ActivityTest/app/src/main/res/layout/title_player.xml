@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorTransparentGrey">
+
+    <ImageView
+        android:id="@+id/title_player_hide_iv"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:padding="4dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/back" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp">
+
+        <TextView
+            android:id="@+id/title_player_musicName_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:text="长长的歌名测试，长长的歌名测试，长长的歌名测试，长长的歌名测试"
+            android:textSize="14sp"
+            android:textColor="@color/colorWhite"/>
+
+        <TextView
+            android:id="@+id/title_player_singer_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="歌手"
+            android:textSize="11sp"
+            android:textColor="@color/colorWhite"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/title_player_share"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/share"/>
+</RelativeLayout>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorTransparentWhite">
+    <!--android:background="@drawable/bg_test"-->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center">
+
+        <LinearLayout
+            android:id="@+id/playlist_mode_ll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dp"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/playlist_mode_iv"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/popupwindow_mode"/>
+
+            <TextView
+                android:id="@+id/playlist_mode_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="列表循环"
+                android:textSize="14sp"
+                android:textColor="@color/colorBlack"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:gravity="center">
+
+            <LinearLayout
+                android:id="@+id/playlist_like_ll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/playlist_like_iv"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/m_like_false"/>
+
+                <TextView
+                    android:id="@+id/playlist_like_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="收藏"
+                    android:textSize="14sp"
+                    android:textColor="@color/colorBlack"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="17dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@color/colorGrey"/>
+
+            <LinearLayout
+                android:id="@+id/playlist_clear_ll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/playlist_clear_iv"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/m_clear"/>
+
+                <TextView
+                    android:id="@+id/playlist_clear_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="清空"
+                    android:textSize="14sp"
+                    android:textColor="@color/colorBlack"/>
+            </LinearLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/colorGrey"/>
+
+    <ListView
+        android:id="@+id/playlist_listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@color/colorTransparent"
+        android:dividerHeight="0px"
+        android:scrollbars="vertical">
+
+    </ListView>
+
+
+</LinearLayout>
