@@ -5,6 +5,7 @@
     android:layout_height="match_parent">
 
     <RelativeLayout
+        android:id="@+id/my_main_title_rl"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@color/colorAccent">

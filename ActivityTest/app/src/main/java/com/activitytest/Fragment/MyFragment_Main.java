@@ -1,16 +1,23 @@
 package com.activitytest.Fragment;
 
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.activitytest.PlayerActivity;
 import com.activitytest.R;
@@ -30,9 +37,14 @@ public class MyFragment_Main extends Fragment implements View.OnClickListener{
 
     View rootview;
 
+    RelativeLayout my_main_title_rl;
     ImageView my_main_playing_iv;       //  ImageView
     TextView my_main_more_tv;
     RecyclerView my_main_recyclerview;      //  RecyclerView
+
+    private PopupWindow mPopupWindow;
+
+
 
     @Nullable
     @Override
@@ -48,11 +60,15 @@ public class MyFragment_Main extends Fragment implements View.OnClickListener{
     }
 
     private void initView(View v){
+        my_main_title_rl = (RelativeLayout) v.findViewById(R.id.my_main_title_rl) ;
+
         my_main_playing_iv = (ImageView) v.findViewById(R.id.my_main_playing_iv);
         my_main_playing_iv.setOnClickListener(this);
 
         my_main_more_tv = (TextView) v.findViewById(R.id.my_main_more_tv);
         my_main_more_tv.setOnClickListener(this);
+
+
 
         my_main_recyclerview = (RecyclerView) v.findViewById(R.id.my_main_recyclerview);
     }
@@ -67,14 +83,52 @@ public class MyFragment_Main extends Fragment implements View.OnClickListener{
                 break;
 
             case R.id.my_main_more_tv:
-
-
                 //  popupwindow    管理歌单
+                showPopupWindow();
+                break;
 
+            case R.id.newlist_rl:
+                Toast.makeText(getContext(), "新建歌单", Toast.LENGTH_SHORT).show();
+                mPopupWindow.dismiss();
+                break;
 
+            case R.id.setlist_rl:
+                Toast.makeText(getContext(), "管理歌单", Toast.LENGTH_SHORT).show();
+                mPopupWindow.dismiss();
+                break;
+
+            case R.id.dismiss_rl:
+                mPopupWindow.dismiss();
                 break;
         }
     }
+    //  按钮“更多”，显示 PopupWindow
+    private void showPopupWindow(){
+        View contentView = LayoutInflater.from(getContext()).inflate(R.layout.popupwindow_more, null);
+
+
+        mPopupWindow = new PopupWindow(contentView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, true);
+        mPopupWindow.setContentView(contentView);
+
+        //  外部可点击，即点击 PopupWindow 以外的区域，PopupWindow 消失
+        mPopupWindow.setBackgroundDrawable(new BitmapDrawable());
+        mPopupWindow.setOutsideTouchable(true);
+
+        RelativeLayout newlist_rl = (RelativeLayout) contentView.findViewById(R.id.newlist_rl);
+        newlist_rl.setOnClickListener(this);
+        RelativeLayout setlist_rl = (RelativeLayout) contentView.findViewById(R.id.setlist_rl);
+        setlist_rl.setOnClickListener(this);
+        RelativeLayout dismiss_rl = (RelativeLayout) contentView.findViewById(R.id.dismiss_rl);
+        dismiss_rl.setOnClickListener(this);
+
+        //  设置启动关闭动画
+//        mPopupWindow.setAnimationStyle(R.style.PopupWindowAnim);
+
+        mPopupWindow.showAsDropDown(my_main_title_rl);
+
+    }
+
+
 
     private void initRecyclerView(){
         List<MyMain> mMyMainList = new ArrayList<>();

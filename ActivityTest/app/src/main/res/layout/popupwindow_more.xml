@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/newlist_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:background="@color/colorWhite">
+
+        <ImageView
+            android:id="@+id/newlist_pic_iv"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="10dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/music_red"/>
+
+        <TextView
+            android:id="@+id/newlist_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/newlist_pic_iv"
+            android:layout_marginLeft="10dp"
+            android:text="新建歌单"
+            android:textSize="15sp"
+            android:textColor="@drawable/poppuwindow_textview"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginLeft="60dp"
+        android:background="@color/colorGrey"/>
+
+
+
+    <RelativeLayout
+        android:id="@+id/setlist_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:background="@color/colorWhite">
+
+        <ImageView
+            android:id="@+id/setlist_pic_iv"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="10dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/music_red"/>
+
+        <TextView
+            android:id="@+id/setlist_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/setlist_pic_iv"
+            android:layout_marginLeft="10dp"
+            android:text="管理歌单"
+            android:textSize="15sp"
+            android:textColor="@drawable/poppuwindow_textview"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginLeft="60dp"
+        android:background="@color/colorGrey"/>
+
+
+
+    <RelativeLayout
+        android:id="@+id/dismiss_rl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorTransparentGrey">
+
+    </RelativeLayout>
+
+</LinearLayout>
